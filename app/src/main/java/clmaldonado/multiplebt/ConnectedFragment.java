@@ -108,7 +108,7 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
                     //mHandler.obtainMessage(2, "La conexión con "+name+" se cerró").sendToTarget();
                     break;
                 }
-                System.out.println("Dato de "+name+":"+(int)buffer[1]+","+(int)buffer[2]+","+(int)buffer[3]+","+(int)buffer[4]);
+                System.out.println("Dato de "+name+":"+i+(int)buffer[1]+","+(int)buffer[2]+","+(int)buffer[3]+","+(int)buffer[4]);
                 try {
                     sleep(10,0);
                 } catch (InterruptedException e) {
