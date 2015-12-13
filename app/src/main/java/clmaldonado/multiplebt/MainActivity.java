@@ -1,0 +1,75 @@
+package clmaldonado.multiplebt;
+
+import android.app.FragmentTransaction;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements Comunicador {
+    BluetoothAdapter btAdapter;
+    int BT_REQUEST = 1;
+    ConnectionFragment connectionFragment;
+    ConnectedFragment connectedFragment;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+        RevisaBluetooth(btAdapter);
+    }
+
+    private void RevisaBluetooth(BluetoothAdapter bt){
+        System.out.println("Entré a revisar el BT");
+        if(bt==null){
+            Toast.makeText(getApplicationContext(),"No se encontró adaptador Bluetooth",Toast.LENGTH_SHORT).show();
+        } else{
+            if (!bt.isEnabled()){
+                Intent i = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(i, BT_REQUEST);
+            }
+            else{
+                PasarAlFragment();
+                System.out.println("Pasé al Fragment");
+            }
+        }
+    }
+
+    private void PasarAlFragment(){
+        connectionFragment = new ConnectionFragment();
+        connectionFragment.GetAdapter(btAdapter);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.Layout,connectionFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == BT_REQUEST) {
+            if (resultCode == -1) {
+                Toast.makeText(getApplicationContext(), "Bluetooth encendido correctamente", Toast.LENGTH_LONG).show();
+                PasarAlFragment();
+                System.out.println("Pasé al Fragment");
+            }
+            if (resultCode == 0) {
+                Toast.makeText(getApplicationContext(), "Error al encender Bluetooth", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void PasaSockets(ArrayList<BluetoothSocket> sockets) {
+        connectedFragment = new ConnectedFragment();
+        connectedFragment.getSockets(sockets);
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.Layout,connectedFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+}
