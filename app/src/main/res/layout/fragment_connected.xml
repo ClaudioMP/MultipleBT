@@ -33,6 +33,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:orientation="vertical">
+                    <com.jjoe64.graphview.GraphView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/Graph1"/>
 
                 </LinearLayout>
 
@@ -40,7 +44,12 @@
                     android:id="@+id/linearLayout2"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
-                    android:orientation="vertical"></LinearLayout>
+                    android:orientation="vertical">
+                    <com.jjoe64.graphview.GraphView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/Graph2"/>
+                </LinearLayout>
             </FrameLayout>
         </LinearLayout>
     </TabHost>
