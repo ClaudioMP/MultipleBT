@@ -60,6 +60,7 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
                 break;
             case R.id.btnFin:
                 // Acá cierro todos los Thread
+                System.out.println("Voy a cerrar los sockets!");
                 for(int i=0;i<threads.length;i++){
                     threads[i].cancel();
                 }
