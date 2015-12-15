@@ -45,13 +45,10 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
                     int i = msg.arg2;
                     int s = msg.arg1;
                     new Actualizar().execute(s,i,a[0],a[1],a[2]);
-                    if(i%3==0){
-                        if(s==1){
-                            new Grafico1().execute((float)i,(float)a[0],(float)a[1],(float)a[2]);
-                        }
-                        else{
-                            new Grafico2().execute((float)i,(float)a[0],(float)a[1],(float)a[2]);
-                        }
+                    if(i%2==0 && s==1){
+                        new Grafico1().execute((float)i,(float)a[0],(float)a[1],(float)a[2]);
+                    } else if (i%2!=0 && s==2){
+                        new Grafico2().execute((float)i,(float)a[0],(float)a[1],(float)a[2]);
                     }
                     break;
                 case 2:
@@ -169,12 +166,15 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
         x = (d[1]/100.00f)-1;
         y = (d[2]/100.00f)-1;
         z = (d[3]/100.00f)-1;
-        double pitch = Math.toDegrees(-Math.asin(2*(x*z - w*y))); // pitch
-        double roll = Math.toDegrees(Math.atan2(2*(w*x + y*z), w*w - x*x - y*y + z*z)); // roll
-        double yaw = Math.toDegrees(Math.atan2(2*(x*y + w*z), 1 - 2*(y*y + z*z))); // yaw
-        angulos[0] = (int)((pitch+0.005)*100);
-        angulos[1] = (int)((roll+0.005)*100);
-        angulos[2] = (int)((yaw+0.005)*100);
+        //double pitch = Math.toDegrees(-Math.asin(2*(x*z - w*y))); // pitch
+        //double roll = Math.toDegrees(Math.atan2(2*(w*x + y*z), w*w - x*x - y*y + z*z)); // roll
+        //double yaw = Math.toDegrees(Math.atan2(2*(x*y + w*z), 1 - 2*(y*y + z*z))); // yaw
+        double pitch = -Math.asin(2*(x*z - w*y)); // pitch
+        double roll = Math.atan2(2*(w*x + y*z), w*w - x*x - y*y + z*z); // roll
+        double yaw = Math.atan2(2*(x*y + w*z), 1 - 2*(y*y + z*z)); // yaw
+        angulos[0] = (int)((pitch)*100);
+        angulos[1] = (int)((roll)*100);
+        angulos[2] = (int)((yaw)*100);
         return angulos;
     }
 
@@ -184,10 +184,8 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
             case R.id.btnInicio:
                 int j=0;
                 for(BluetoothSocket s: Sockets){
-                    threads[j++]=new ConnectedThread(s,connectedHandler);
-                }
-                for(int i=0;i<threads.length;i++){
-                    threads[i].start();
+                    threads[j]=new ConnectedThread(s,connectedHandler);
+                    threads[j++].start();
                 }
                 break;
             case R.id.btnFin:
@@ -281,37 +279,41 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
     private class Grafico1 extends AsyncTask<Float,Void,DataPoint[]>{
         @Override
         protected DataPoint[] doInBackground(Float... p) {
+            System.out.println("Nuevo dato en Grafico 1: "+p[0].intValue()+","+p[1]+","+p[2]+","+p[3]);
             return new DataPoint[]{
-                new DataPoint(p[0],p[1]/100.00f),
-                new DataPoint(p[0],p[2]/100.00f),
-                new DataPoint(p[0],p[3]/100.00f)
+                new DataPoint(p[0].intValue(),p[1]/100.00f),
+                new DataPoint(p[0].intValue(),p[2]/100.00f),
+                new DataPoint(p[0].intValue(),p[3]/100.00f)
             };
         }
 
         @Override
         protected void onPostExecute(DataPoint[] d) {
+
             super.onPostExecute(d);
-            s11.appendData(d[0],true,1000);
-            s12.appendData(d[1],true,1000);
-            s13.appendData(d[2],true,1000);
+            s11.appendData(d[0],true,100);
+            s12.appendData(d[1],true,100);
+            s13.appendData(d[2],true,100);
         }
     }
+
     private class Grafico2 extends AsyncTask<Float,Void,DataPoint[]>{
         @Override
         protected DataPoint[] doInBackground(Float... p) {
+            System.out.println("Nuevo dato en Grafico 2: "+p[0]+","+p[1]+","+p[2]+","+p[3]);
             return new DataPoint[]{
-                new DataPoint(p[0],p[1]/100.00f),
-                new DataPoint(p[0],p[2]/100.00f),
-                new DataPoint(p[0],p[3]/100.00f)
+                new DataPoint(p[0].intValue(),p[1]/100.00f),
+                new DataPoint(p[0].intValue(),p[2]/100.00f),
+                new DataPoint(p[0].intValue(),p[3]/100.00f)
             };
         }
 
         @Override
         protected void onPostExecute(DataPoint[] d) {
             super.onPostExecute(d);
-            s21.appendData(d[0],true,1000);
-            s22.appendData(d[1],true,1000);
-            s23.appendData(d[2],true,1000);
+            s21.appendData(d[0],true,100);
+            s22.appendData(d[1],true,100);
+            s23.appendData(d[2],true,100);
         }
     }
 }
