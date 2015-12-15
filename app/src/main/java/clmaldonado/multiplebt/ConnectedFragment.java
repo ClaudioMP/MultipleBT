@@ -287,25 +287,37 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
     private class Grafico1 extends AsyncTask<Float,Void,DataPoint[]>{
         @Override
         protected DataPoint[] doInBackground(Float... p) {
-
-            return new DataPoint[0];
+            return new DataPoint[]{
+                new DataPoint(p[0],p[1]/100.00f),
+                new DataPoint(p[0],p[2]/100.00f),
+                new DataPoint(p[0],p[3]/100.00f)
+            };
         }
 
         @Override
-        protected void onPostExecute(DataPoint[] dataPoints) {
-            super.onPostExecute(dataPoints);
+        protected void onPostExecute(DataPoint[] d) {
+            super.onPostExecute(d);
+            s11.appendData(d[0],true,500);
+            s12.appendData(d[1],true,500);
+            s13.appendData(d[2],true,500);
         }
     }
     private class Grafico2 extends AsyncTask<Float,Void,DataPoint[]>{
         @Override
         protected DataPoint[] doInBackground(Float... p) {
-
-            return new DataPoint[0];
+            return new DataPoint[]{
+                new DataPoint(p[0],p[1]/100.00f),
+                new DataPoint(p[0],p[2]/100.00f),
+                new DataPoint(p[0],p[3]/100.00f)
+            };
         }
 
         @Override
-        protected void onPostExecute(DataPoint[] dataPoints) {
-            super.onPostExecute(dataPoints);
+        protected void onPostExecute(DataPoint[] d) {
+            super.onPostExecute(d);
+            s21.appendData(d[0],true,500);
+            s22.appendData(d[1],true,500);
+            s23.appendData(d[2],true,500);
         }
     }
 }
