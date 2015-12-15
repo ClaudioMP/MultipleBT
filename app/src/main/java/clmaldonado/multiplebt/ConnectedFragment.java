@@ -45,7 +45,7 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
                     int i = msg.arg2;
                     int s = msg.arg1;
                     new Actualizar().execute(s,i,a[0],a[1],a[2]);
-                    if(i%2==0){
+                    if(i%3==0){
                         if(s==1){
                             new Grafico1().execute((float)i,(float)a[0],(float)a[1],(float)a[2]);
                         }
@@ -268,13 +268,7 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
         @Override
         protected Void doInBackground(Integer... p) {
             //sensor,indice,pitch,roll,yaw
-            float[] data = new float[5];
-            data[0] = (float)p[0];
-            data[1] = (float)p[1];
-            data[2] = p[2]/100.00f;
-            data[3] = p[3]/100.00f;
-            data[4] = p[4]/100.00f;
-            String val = p[0].toString()+","+p[1].toString()+","+data[2]+","+data[3]+","+data[4];
+            String val = p[0].toString()+","+p[1].toString()+","+p[2]/100.00f+","+p[3]/100.00f+","+p[4]/100.00f;
             try {
                 salida.write(val.getBytes());
             } catch (IOException e) {
@@ -297,9 +291,9 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
         @Override
         protected void onPostExecute(DataPoint[] d) {
             super.onPostExecute(d);
-            s11.appendData(d[0],true,500);
-            s12.appendData(d[1],true,500);
-            s13.appendData(d[2],true,500);
+            s11.appendData(d[0],true,1000);
+            s12.appendData(d[1],true,1000);
+            s13.appendData(d[2],true,1000);
         }
     }
     private class Grafico2 extends AsyncTask<Float,Void,DataPoint[]>{
@@ -315,9 +309,9 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
         @Override
         protected void onPostExecute(DataPoint[] d) {
             super.onPostExecute(d);
-            s21.appendData(d[0],true,500);
-            s22.appendData(d[1],true,500);
-            s23.appendData(d[2],true,500);
+            s21.appendData(d[0],true,1000);
+            s22.appendData(d[1],true,1000);
+            s23.appendData(d[2],true,1000);
         }
     }
 }
