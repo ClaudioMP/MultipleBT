@@ -268,7 +268,7 @@ public class ConnectedFragment extends Fragment implements View.OnClickListener{
         @Override
         protected Void doInBackground(Integer... p) {
             //sensor,indice,pitch,roll,yaw
-            String val = p[0].toString()+","+p[1].toString()+","+p[2]/100.00f+","+p[3]/100.00f+","+p[4]/100.00f;
+            String val = p[0].toString()+","+p[1].toString()+","+p[2]/100.00f+","+p[3]/100.00f+","+p[4]/100.00f+"\n";
             try {
                 salida.write(val.getBytes());
             } catch (IOException e) {
