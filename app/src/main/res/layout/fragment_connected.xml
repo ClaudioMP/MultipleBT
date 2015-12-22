@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     tools:context="clmaldonado.multiplebt.ConnectedFragment">
 
-    <!-- TODO: Update blank fragment layout -->
 
     <TabHost
         android:layout_width="match_parent"

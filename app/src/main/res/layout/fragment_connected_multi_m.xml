@@ -1,0 +1,40 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="clmaldonado.multiplebt.ConnectedMultiMP">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&#9658; Iniciar"
+        android:id="@+id/Receive"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\u25FC Parar"
+        android:id="@+id/Stop"
+        android:layout_toRightOf="@id/Receive"
+        android:layout_toEndOf="@id/Receive"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/Stop"
+        android:layout_toRightOf="@id/Stop"
+        android:id="@+id/Calibrar"
+        android:text="Calibrar"/>
+    <com.github.mikephil.charting.charts.LineChart
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:id="@+id/chart1"
+        android:layout_below="@id/Stop"
+        />
+    <com.github.mikephil.charting.charts.LineChart
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:id="@+id/chart2"
+        android:layout_below="@id/chart1"
+        />
+</RelativeLayout>

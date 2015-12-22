@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     int BT_REQUEST = 1;
     ConnectionFragment connectionFragment;
     ConnectedFragment connectedFragment;
+    ConnectedMultiMP connectedMultiMP;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,11 +66,22 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
 
     @Override
     public void PasaSockets(ArrayList<BluetoothSocket> sockets) {
-        connectedFragment = new ConnectedFragment();
-        connectedFragment.getSockets(sockets);
+        connectedMultiMP = new ConnectedMultiMP();
+        connectedMultiMP.getSockets(sockets);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.Layout,connectedFragment);
+        fragmentTransaction.replace(R.id.Layout,connectedMultiMP);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+        System.out.println(getFragmentManager().getBackStackEntryCount());
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(getFragmentManager().getBackStackEntryCount()!=0){
+            getFragmentManager().popBackStack();
+        }
+        else{
+            super.onBackPressed();
+        }
     }
 }
