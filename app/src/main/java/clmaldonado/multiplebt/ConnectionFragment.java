@@ -47,7 +47,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 case 1:
                     BluetoothSocket tmp = (BluetoothSocket)msg.obj;
                     sockets.add(tmp);
-                    tvConectados.append("- " + tmp.getRemoteDevice().getName() + "\n");
+                    tvConectados.append("\u2713 " + tmp.getRemoteDevice().getName() + "\n");
                     break;
                 case 2:
                     Toast.makeText(getActivity().getBaseContext(),"\u26A0 "+msg.obj,Toast.LENGTH_SHORT).show();

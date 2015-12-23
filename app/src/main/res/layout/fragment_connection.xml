@@ -20,6 +20,7 @@
         android:maxLines="4"
         android:text="Dispositivos Conectados:\n"
         android:id="@+id/tvConectados"
-        android:layout_below="@id/btnNext"/>
+        android:layout_below="@id/btnNext"
+        android:textAppearance="?android:textAppearanceMedium"/>
 
 </RelativeLayout>
