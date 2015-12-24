@@ -3,11 +3,8 @@ package clmaldonado.multiplebt;
 
 import android.bluetooth.BluetoothSocket;
 import android.graphics.Color;
-import android.os.Bundle;
+import android.os.*;
 import android.app.Fragment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +17,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 
 
@@ -37,6 +33,9 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     LineChart[] charts = new LineChart[2];
     ArrayList<ArrayList<LineDataSet>> sets = new ArrayList<>();
     LineData[] datos = new LineData[2];
+    // Para la escritura en archivo
+    FileOutputStream fout;
+    String FileName = "Data.csv";
     // Para la calibración
     float[] basePitch, baseRoll, baseYaw;
     Handler handler = new Handler(Looper.getMainLooper()){
@@ -174,6 +173,12 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         x = (d[1]/100.00f)-1;
         y = (d[2]/100.00f)-1;
         z = (d[3]/100.00f)-1;
+        String out = sensor+","+index+","+w+","+x+","+y+","+z+"\n";
+        try {
+            fout.write(out.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         double[] angulos = new double[3];
         angulos[0] = Math.toDegrees(-Math.asin(2*(x*z - w*y))) - basePitch[sensor]; // pitch
         angulos[1] = Math.toDegrees(Math.atan2(2 * (w * x + y * z), w * w - x * x - y * y + z * z)) - baseRoll[sensor]; // roll
@@ -184,6 +189,28 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
     }
 
+    public void RevisarEstado(){
+        // Acá revisamos si el almacenamiento externo está disponible
+        String estado = Environment.getExternalStorageState();
+        if(Environment.MEDIA_MOUNTED.equals(estado)){
+            File Root = Environment.getExternalStorageDirectory();
+            File Dir = new File(Root.getAbsolutePath()+"/MdeT");
+            if(!Dir.exists()){
+                Dir.mkdir();
+            }
+            File archivo = new File(Dir,FileName);
+            try {
+                fout = new FileOutputStream(archivo);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            Toast.makeText(getActivity().getBaseContext(),"SD card not available",Toast.LENGTH_LONG).show();
+        }
+        System.out.println("Se puede escribir");
+    }
+
     private class Recepcion extends Thread{
         private BluetoothSocket mmSocket;
         private Handler mHandler;
@@ -192,7 +219,6 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         private int sensor;
 
         private Recepcion(BluetoothSocket s,Handler h){
-            // TODO: Implementar la escritura en el archivo de salida
             mmSocket = s;
             mHandler = h;
             name = mmSocket.getRemoteDevice().getName();
