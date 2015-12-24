@@ -80,6 +80,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         charts[0] = (LineChart)view.findViewById(R.id.chart1);
         charts[1] = (LineChart)view.findViewById(R.id.chart2);
         ConfiguraGraficos();
+        RevisarEstado();
         return view;
     }
 
@@ -145,6 +146,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 threads[1].start();
                 parar.setClickable(true);
                 calibrar.setClickable(true);
+                iniciar.setVisibility(View.GONE);
                 break;
             case R.id.Stop:
                 for(Recepcion th:threads){
@@ -154,8 +156,12 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             case R.id.Calibrar:
                 for(int i=0;i<cantSockets;i++){
                     basePitch[i] = datos[i].getDataSetByIndex(0).getYValForXIndex(datos[i].getXValCount()-2);
+                    datos[i].getDataSetByIndex(0).clear();
                     baseRoll[i] = datos[i].getDataSetByIndex(1).getYValForXIndex(datos[i].getXValCount()-2);
+                    datos[i].getDataSetByIndex(1).clear();
                     baseYaw[i] = datos[i].getDataSetByIndex(2).getYValForXIndex(datos[i].getXValCount()-2);
+                    datos[i].getDataSetByIndex(2).clear();
+                    charts[i].invalidate();
                 }
                 calibrar.setClickable(false);
                 calibrar.setVisibility(View.GONE);
@@ -173,12 +179,6 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         x = (d[1]/100.00f)-1;
         y = (d[2]/100.00f)-1;
         z = (d[3]/100.00f)-1;
-        String out = sensor+","+index+","+w+","+x+","+y+","+z+"\n";
-        try {
-            fout.write(out.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         double[] angulos = new double[3];
         angulos[0] = Math.toDegrees(-Math.asin(2*(x*z - w*y))) - basePitch[sensor]; // pitch
         angulos[1] = Math.toDegrees(Math.atan2(2 * (w * x + y * z), w * w - x * x - y * y + z * z)) - baseRoll[sensor]; // roll
@@ -187,6 +187,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         for(int i=0;i<3;i++){
             datos[sensor].addEntry(new Entry((((int) ((angulos[i] + 0.005) * 100)) / 100f), index), i);
         }
+        new Archivo().execute(sensor,index,d[0],d[1],d[2],d[3]);
     }
 
     public void RevisarEstado(){
@@ -201,6 +202,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             File archivo = new File(Dir,FileName);
             try {
                 fout = new FileOutputStream(archivo);
+                System.out.println("Se puede escribir");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -208,7 +210,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         else{
             Toast.makeText(getActivity().getBaseContext(),"SD card not available",Toast.LENGTH_LONG).show();
         }
-        System.out.println("Se puede escribir");
+
     }
 
     private class Recepcion extends Thread{
@@ -235,14 +237,14 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
 
         public void run(){
             int i = 0,bytes;
-            try {
-                inputStream.read();
-                sleep(10);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                inputStream.read();
+//                sleep(10);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
             while(true){
                 i++;
                 byte[] buffer = new byte[5];
@@ -257,11 +259,12 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     mHandler.obtainMessage(2, "La conexión con "+name+" se cerró").sendToTarget();
                     break;
                 }
-                Angulos(sensor-1, i, buffer);
+                //mHandler.obtainMessage(4,sensor-1,i,buffer).sendToTarget();
+                Angulos(sensor - 1, i, buffer);
                 if(i%10==0) {
                     mHandler.obtainMessage(1, sensor-1, i).sendToTarget();
+                    System.out.println(("Voy a actualizar " + sensor + "," + i));
                 }
-                //System.out.println(name+","+i+","+(int)buffer[1]+","+(int)buffer[2]+","+(int)buffer[3]+","+(int)buffer[4]);
                 try {
                     sleep(10,0);
                 } catch (InterruptedException e) {
@@ -275,6 +278,22 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public class Archivo extends AsyncTask<Integer,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Integer... p) {
+            // sensor, index, w,x,y,z
+            String out = p[0]+","+p[1]+","+p[2]/100.00f+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f+"\n";
+            try {
+                fout.write(out.getBytes());
+                System.out.println(out);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 
