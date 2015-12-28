@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -30,9 +31,11 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     int cantSockets;
     Recepcion[] threads;
     Button iniciar, parar, calibrar;
-    LineChart[] charts = new LineChart[2];
+    LineChart[] charts;
     ArrayList<ArrayList<LineDataSet>> sets = new ArrayList<>();
-    LineData[] datos = new LineData[2];
+    LineData[] datos;
+    // Layout con las gráficas
+    LinearLayout graficos;
     // Para la escritura en archivo
     FileOutputStream fout;
     String FileName = "Data.csv";
@@ -77,16 +80,21 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         parar.setClickable(false);
         calibrar.setClickable(false);
         // Gráficas
-        charts[0] = (LineChart)view.findViewById(R.id.chart1);
-        charts[1] = (LineChart)view.findViewById(R.id.chart2);
+        graficos = (LinearLayout)view.findViewById(R.id.graficas);
+        for(int i=0;i<cantSockets;i++){
+            charts[i] = new LineChart(getActivity().getBaseContext());
+            charts[i].setMinimumHeight(300);
+            graficos.addView(charts[i]);
+        }
         ConfiguraGraficos();
         RevisarEstado();
         return view;
     }
 
     public void ConfiguraGraficos(){
-        sets.add(new ArrayList<LineDataSet>());
-        sets.add(new ArrayList<LineDataSet>());
+        for(int i=0; i<cantSockets;i++) {
+            sets.add(new ArrayList<LineDataSet>());
+        }
         int i = 0;
         for(ArrayList<LineDataSet> s:sets){
             s.add(new LineDataSet(new ArrayList<Entry>(),"Pitch"));
@@ -125,10 +133,12 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         cantSockets = Sockets.size();
         System.out.println("Recibí los " + cantSockets + " sockets");
         threads = new Recepcion[cantSockets];
+        charts = new LineChart[cantSockets];
+        datos = new LineData[cantSockets];
         basePitch = new float[cantSockets];
         baseRoll = new float[cantSockets];
         baseYaw = new float[cantSockets];
-
+        System.out.println("Todo creado, listo para iniciar");
     }
 
     @Override
@@ -142,8 +152,9 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 for(int i = 0;i< cantSockets;i++){
                     threads[i] = new Recepcion(Sockets.get(i),handler);
                 }
-                threads[0].start();
-                threads[1].start();
+                for (int i=0;i<cantSockets;i++){
+                    threads[i].start();
+                }
                 parar.setClickable(true);
                 calibrar.setClickable(true);
                 iniciar.setVisibility(View.GONE);
@@ -212,7 +223,6 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
 
     }
-
     private class Recepcion extends Thread{
         private BluetoothSocket mmSocket;
         private Handler mHandler;
@@ -237,14 +247,14 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
 
         public void run(){
             int i = 0,bytes;
-//            try {
-//                inputStream.read();
-//                sleep(10);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                inputStream.read();
+                sleep(10,0);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             while(true){
                 i++;
                 byte[] buffer = new byte[5];
@@ -255,7 +265,6 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    System.out.println("Connected Thread: Socket con " + name + " cerrado");
                     mHandler.obtainMessage(2, "La conexión con "+name+" se cerró").sendToTarget();
                     break;
                 }
@@ -263,7 +272,6 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 Angulos(sensor - 1, i, buffer);
                 if(i%10==0) {
                     mHandler.obtainMessage(1, sensor-1, i).sendToTarget();
-                    System.out.println(("Voy a actualizar " + sensor + "," + i));
                 }
                 try {
                     sleep(10,0);

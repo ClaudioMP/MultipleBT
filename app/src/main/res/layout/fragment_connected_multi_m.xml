@@ -25,16 +25,16 @@
         android:layout_toRightOf="@id/Stop"
         android:id="@+id/Calibrar"
         android:text="Calibrar"/>
-    <com.github.mikephil.charting.charts.LineChart
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:id="@+id/chart1"
-        android:layout_below="@id/Stop"
-        />
-    <com.github.mikephil.charting.charts.LineChart
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:id="@+id/chart2"
-        android:layout_below="@id/chart1"
-        />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Stop">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/graficas">
+
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>

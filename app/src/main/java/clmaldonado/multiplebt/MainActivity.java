@@ -15,7 +15,6 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     BluetoothAdapter btAdapter;
     int BT_REQUEST = 1;
     ConnectionFragment connectionFragment;
-    ConnectedFragment connectedFragment;
     ConnectedMultiMP connectedMultiMP;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +25,6 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     }
 
     private void RevisaBluetooth(BluetoothAdapter bt){
-        System.out.println("Entré a revisar el BT");
         if(bt==null){
             Toast.makeText(getApplicationContext(),"No se encontró adaptador Bluetooth",Toast.LENGTH_SHORT).show();
         } else{
@@ -36,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
             }
             else{
                 PasarAlFragment();
-                System.out.println("Pasé al Fragment");
             }
         }
     }
@@ -56,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
             if (resultCode == -1) {
                 Toast.makeText(getApplicationContext(), "Bluetooth encendido correctamente", Toast.LENGTH_LONG).show();
                 PasarAlFragment();
-                System.out.println("Pasé al Fragment");
             }
             if (resultCode == 0) {
                 Toast.makeText(getApplicationContext(), "Error al encender Bluetooth", Toast.LENGTH_SHORT).show();
@@ -72,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
         fragmentTransaction.replace(R.id.Layout,connectedMultiMP);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-        System.out.println(getFragmentManager().getBackStackEntryCount());
     }
 
     @Override
