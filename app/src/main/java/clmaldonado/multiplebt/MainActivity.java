@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
         connectedMultiMP = new ConnectedMultiMP();
         connectedMultiMP.getSockets(sockets);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.Layout,connectedMultiMP);
+        fragmentTransaction.replace(R.id.Layout, connectedMultiMP);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

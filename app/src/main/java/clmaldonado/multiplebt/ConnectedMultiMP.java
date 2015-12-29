@@ -150,7 +150,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     c.setData(datos[j++]);
                 }
                 for(int i = 0;i< cantSockets;i++){
-                    threads[i] = new Recepcion(Sockets.get(i),handler);
+                    threads[i] = new Recepcion(Sockets.get(i),handler,i);
                 }
                 for (int i=0;i<cantSockets;i++){
                     threads[i].start();
@@ -177,6 +177,13 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 calibrar.setClickable(false);
                 calibrar.setVisibility(View.GONE);
                 break;
+        }
+    }
+
+    public void PararTodo(){
+        // Esta función se usará desde el MainActivity para frenar los threads cuando se vuelve atrás sin clickear el botón Parar
+        for(int i=0;i<cantSockets;i++){
+            threads[i].cancel();
         }
     }
 
@@ -230,11 +237,11 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         private String name;
         private int sensor;
 
-        private Recepcion(BluetoothSocket s,Handler h){
+        public Recepcion(BluetoothSocket s,Handler h,int n){
             mmSocket = s;
             mHandler = h;
             name = mmSocket.getRemoteDevice().getName();
-            sensor = name.equals(Sockets.get(0).getRemoteDevice().getName())?1:2;
+            sensor = n;
             InputStream tmpIn = null;
             try {
                 tmpIn = mmSocket.getInputStream();
@@ -268,10 +275,11 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     mHandler.obtainMessage(2, "La conexión con "+name+" se cerró").sendToTarget();
                     break;
                 }
+                System.out.println(sensor+" , "+buffer.length);
                 //mHandler.obtainMessage(4,sensor-1,i,buffer).sendToTarget();
-                Angulos(sensor - 1, i, buffer);
+                Angulos(sensor, i, buffer);
                 if(i%10==0) {
-                    mHandler.obtainMessage(1, sensor-1, i).sendToTarget();
+                    mHandler.obtainMessage(1, sensor, i).sendToTarget();
                 }
                 try {
                     sleep(10,0);
@@ -297,7 +305,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             String out = p[0]+","+p[1]+","+p[2]/100.00f+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f+"\n";
             try {
                 fout.write(out.getBytes());
-                System.out.println(out);
+                //System.out.println(out);
             } catch (IOException e) {
                 e.printStackTrace();
             }
