@@ -7,7 +7,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="clmaldonado.multiplebt.MainActivity">
+    tools:context="clmaldonado.multiplebt.MainActivity"
+    android:keepScreenOn="true">
 
     <FrameLayout
         android:layout_width="match_parent"

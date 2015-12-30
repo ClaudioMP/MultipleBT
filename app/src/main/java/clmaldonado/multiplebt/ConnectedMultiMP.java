@@ -271,11 +271,10 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                         inputStream.read(buffer,bytes,5-bytes);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println(e.toString());
                     mHandler.obtainMessage(2, "La conexión con "+name+" se cerró").sendToTarget();
                     break;
                 }
-                System.out.println(sensor+" , "+buffer.length);
                 //mHandler.obtainMessage(4,sensor-1,i,buffer).sendToTarget();
                 Angulos(sensor, i, buffer);
                 if(i%10==0) {
