@@ -140,11 +140,11 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 mmSocket.connect();
             } catch (IOException e) {
                 mHandler.obtainMessage(2,"Error al conectar con "+mmDevice.getName()).sendToTarget();
-                e.printStackTrace();
+                e.toString();
                 try {
                     mmSocket.close();
                 } catch (IOException e1) {
-                    e1.printStackTrace();
+                    e1.toString();
                 }
                 return;
             }
