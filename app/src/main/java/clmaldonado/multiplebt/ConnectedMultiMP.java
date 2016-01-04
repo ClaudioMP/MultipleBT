@@ -176,14 +176,17 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 }
                 calibrar.setClickable(false);
                 calibrar.setVisibility(View.GONE);
+                System.out.println("Calibrado");
                 break;
         }
     }
 
     public void PararTodo(){
         // Esta función se usará desde el MainActivity para frenar los threads cuando se vuelve atrás sin clickear el botón Parar
-        for(int i=0;i<cantSockets;i++){
-            threads[i].cancel();
+        if(threads[0].isAlive()) {
+            for (int i = 0; i < cantSockets; i++) {
+                threads[i].cancel();
+            }
         }
     }
 
@@ -230,6 +233,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
 
     }
+
     private class Recepcion extends Thread{
         private BluetoothSocket mmSocket;
         private Handler mHandler;
@@ -265,10 +269,15 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             while(true){
                 i++;
                 byte[] buffer = new byte[5];
+                bytes = 0;
                 try {
-                    bytes = inputStream.read(buffer);
-                    if (bytes < 5){
-                        inputStream.read(buffer,bytes,5-bytes);
+                    System.out.println(mmSocket.getRemoteDevice().getName() + " Leyendo " + i);
+                    while(bytes < 5){
+                        bytes += inputStream.read(buffer,bytes,5-bytes);
+                        if(buffer[0]!=-1){
+                            buffer = new byte[5];
+                            bytes = 0;
+                        }
                     }
                 } catch (IOException e) {
                     System.out.println(e.toString());
@@ -276,14 +285,13 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     break;
                 }
                 //mHandler.obtainMessage(4,sensor-1,i,buffer).sendToTarget();
+                System.out.println(mmSocket.getRemoteDevice().getName() + " Escribiendo " + i);
                 Angulos(sensor, i, buffer);
                 if(i%10==0) {
                     mHandler.obtainMessage(1, sensor, i).sendToTarget();
                 }
-                try {
-                    sleep(10,0);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if (!mmSocket.isConnected()){
+                    System.out.println("Perdí la conexión con " + mmSocket.getRemoteDevice().getName());
                 }
             }
         }

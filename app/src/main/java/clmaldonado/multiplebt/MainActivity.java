@@ -74,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     public void onBackPressed() {
         if(getFragmentManager().getBackStackEntryCount()>1){
             getFragmentManager().popBackStack();
+            connectedMultiMP.PararTodo();
+            System.gc();
         }
         else{
             super.onBackPressed();
