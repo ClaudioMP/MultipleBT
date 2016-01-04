@@ -41,6 +41,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     String FileName = "Data.csv";
     // Para la calibración
     float[] basePitch, baseRoll, baseYaw;
+    int[] basei;
     Handler handler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
@@ -138,6 +139,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         basePitch = new float[cantSockets];
         baseRoll = new float[cantSockets];
         baseYaw = new float[cantSockets];
+        basei = new int[cantSockets];
         System.out.println("Todo creado, listo para iniciar");
     }
 
@@ -173,6 +175,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     baseYaw[i] = datos[i].getDataSetByIndex(2).getYValForXIndex(datos[i].getXValCount()-2);
                     datos[i].getDataSetByIndex(2).clear();
                     charts[i].invalidate();
+                    basei[i] = datos[i].getXValCount()-2;
                 }
                 calibrar.setClickable(false);
                 calibrar.setVisibility(View.GONE);
@@ -201,6 +204,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         y = (d[2]/100.00f)-1;
         z = (d[3]/100.00f)-1;
         double[] angulos = new double[3];
+        index -= basei[sensor];
         angulos[0] = Math.toDegrees(-Math.asin(2*(x*z - w*y))) - basePitch[sensor]; // pitch
         angulos[1] = Math.toDegrees(Math.atan2(2 * (w * x + y * z), w * w - x * x - y * y + z * z)) - baseRoll[sensor]; // roll
         angulos[2] = Math.toDegrees(Math.atan2(2 * (x * y + w * z), 1 - 2 * (y * y + z * z))) - baseYaw[sensor];// yaw
@@ -258,14 +262,6 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
 
         public void run(){
             int i = 0,bytes;
-            try {
-                inputStream.read();
-                sleep(10,0);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             while(true){
                 i++;
                 byte[] buffer = new byte[5];
@@ -273,7 +269,8 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 try {
                     System.out.println(mmSocket.getRemoteDevice().getName() + " Leyendo " + i);
                     while(bytes < 5){
-                        bytes += inputStream.read(buffer,bytes,5-bytes);
+                        System.out.println(inputStream.available());
+                        bytes += inputStream.read(buffer,bytes,1);
                         if(buffer[0]!=-1){
                             buffer = new byte[5];
                             bytes = 0;
