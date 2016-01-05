@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     ArrayList<BluetoothSocket> Sockets;
-    int cantSockets;
+    int cantSockets = 0;
     Recepcion[] threads;
     Button iniciar, parar, calibrar;
     LineChart[] charts;
@@ -131,7 +131,9 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
 
     public void getSockets(ArrayList<BluetoothSocket> socks){
         Sockets = socks;
-        cantSockets = Sockets.size();
+        for (BluetoothSocket s: Sockets){
+            cantSockets+= s.isConnected()?1:0;
+        }
         System.out.println("Recibí los " + cantSockets + " sockets");
         threads = new Recepcion[cantSockets];
         charts = new LineChart[cantSockets];
@@ -204,7 +206,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         y = (d[2]/100.00f)-1;
         z = (d[3]/100.00f)-1;
         double[] angulos = new double[3];
-        index -= basei[sensor];
+        //index -= basei[sensor];
         angulos[0] = Math.toDegrees(-Math.asin(2*(x*z - w*y))) - basePitch[sensor]; // pitch
         angulos[1] = Math.toDegrees(Math.atan2(2 * (w * x + y * z), w * w - x * x - y * y + z * z)) - baseRoll[sensor]; // roll
         angulos[2] = Math.toDegrees(Math.atan2(2 * (x * y + w * z), 1 - 2 * (y * y + z * z))) - baseYaw[sensor];// yaw
@@ -258,22 +260,34 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             }
             inputStream = tmpIn;
             mHandler.obtainMessage(3,"Recibiendo datos de "+name).sendToTarget();
+            try {
+                inputStream.read(new byte[inputStream.available()],0,inputStream.available());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         public void run(){
             int i = 0,bytes;
+            // Esto es una especie de GC para evitar graficas de golpe
+            try {
+                inputStream.read(new byte[inputStream.available()],0,inputStream.available());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             while(true){
                 i++;
                 byte[] buffer = new byte[5];
                 bytes = 0;
                 try {
-                    System.out.println(mmSocket.getRemoteDevice().getName() + " Leyendo " + i);
                     while(bytes < 5){
-                        System.out.println(inputStream.available());
-                        bytes += inputStream.read(buffer,bytes,1);
-                        if(buffer[0]!=-1){
-                            buffer = new byte[5];
-                            bytes = 0;
+                        //System.out.println(name + " Disponible: " + inputStream.available());
+                        if(inputStream.available()>0) {
+                            bytes += inputStream.read(buffer,bytes,1);
+                            if (buffer[0] != -1) {
+                                buffer = new byte[5];
+                                bytes = 0;
+                            }
                         }
                     }
                 } catch (IOException e) {
@@ -282,13 +296,10 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     break;
                 }
                 //mHandler.obtainMessage(4,sensor-1,i,buffer).sendToTarget();
-                System.out.println(mmSocket.getRemoteDevice().getName() + " Escribiendo " + i);
+                //System.out.println(mmSocket.getRemoteDevice().getName() + " Escribiendo " + i);
                 Angulos(sensor, i, buffer);
                 if(i%10==0) {
                     mHandler.obtainMessage(1, sensor, i).sendToTarget();
-                }
-                if (!mmSocket.isConnected()){
-                    System.out.println("Perdí la conexión con " + mmSocket.getRemoteDevice().getName());
                 }
             }
         }
