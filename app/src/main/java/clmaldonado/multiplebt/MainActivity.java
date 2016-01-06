@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         RevisaBluetooth(btAdapter);
     }
-
     private void RevisaBluetooth(BluetoothAdapter bt){
         if(bt==null){
             Toast.makeText(getApplicationContext(),"No se encontró adaptador Bluetooth",Toast.LENGTH_SHORT).show();

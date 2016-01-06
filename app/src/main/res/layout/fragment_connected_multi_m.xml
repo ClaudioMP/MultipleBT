@@ -8,13 +8,13 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="&#9658; Iniciar"
+        android:text="@string/start"
         android:id="@+id/Receive"
         />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="\u25FC Parar"
+        android:text="@string/stop"
         android:id="@+id/Stop"
         android:layout_toRightOf="@id/Receive"
         android:layout_toEndOf="@id/Receive"
@@ -25,7 +25,7 @@
         android:layout_toEndOf="@id/Stop"
         android:layout_toRightOf="@id/Stop"
         android:id="@+id/Calibrar"
-        android:text="Calibrar"/>
+        android:text="@string/calibrate"/>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

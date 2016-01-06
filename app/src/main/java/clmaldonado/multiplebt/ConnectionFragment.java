@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -39,6 +40,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     String[] plist;
     ArrayList<BluetoothDevice> devices;
     ArrayList<BluetoothSocket> sockets;
+    ArrayList<Limpieza> cleaning = new ArrayList<>();
     Handler connectionHandler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
@@ -48,6 +50,8 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                     BluetoothSocket tmp = (BluetoothSocket)msg.obj;
                     sockets.add(tmp);
                     tvConectados.append("\u2713 " + tmp.getRemoteDevice().getName() + "\n");
+                    cleaning.add(new Limpieza(tmp));
+                    cleaning.get(cleaning.size()-1).start();
                     break;
                 case 2:
                     Toast.makeText(getActivity().getBaseContext(),"\u26A0 "+msg.obj,Toast.LENGTH_SHORT).show();
@@ -62,7 +66,6 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     public ConnectionFragment() {
         // Required empty public constructor
     }
-    // TODO: Agregar un método que se encargue de vaciar los buffers de recepción
     public void GetAdapter(BluetoothAdapter a){
         btAdapter = a;
     }
@@ -99,7 +102,8 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String aviso = "Conectando con "+devices.get(position).getName();
         Toast.makeText(getActivity().getBaseContext(), aviso, Toast.LENGTH_SHORT);
-        new ConnectionThread(devices.get(position),connectionHandler,btAdapter).start();
+        new ConnectionThread(devices.get(position), connectionHandler, btAdapter).start();
+
     }
 
     @Override
@@ -109,6 +113,9 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 System.out.println(socket.getRemoteDevice().getName()+" Conectado");
             }
         }
+//        for(int i =0;i<cleaning.size();i++){
+//            cleaning.get(i).close();
+//        }
         comunicador.PasaSockets(sockets);
     }
 
@@ -117,6 +124,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
         private final BluetoothDevice mmDevice;
         private final BluetoothAdapter mmAdapter;
         private final Handler mHandler;
+        private InputStream is;
         // UUID for serial communication
         private final UUID spp = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -148,18 +156,48 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 }
                 return;
             }
-            System.out.println("Conectado con "+mmDevice.getName());
+            System.out.println("Conectado con " + mmDevice.getName());
             mHandler.obtainMessage(3,"Conectado con "+mmDevice.getName()).sendToTarget();
             mHandler.obtainMessage(1,mmSocket).sendToTarget();
         }
 
-        public void cancel(){
+    }
+
+    private class Limpieza extends Thread{
+        private BluetoothSocket mmSocket;
+        private InputStream is;
+
+        private Limpieza(BluetoothSocket sock){
+            mmSocket = sock;
+            InputStream tmpIn = null;
             try {
-                mmSocket.close();
+                tmpIn = mmSocket.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            is = tmpIn;
+        }
+
+        public void run(){
+            while (true) {
+                try {
+                    if (is.available() > 100) {
+                        is.read(new byte[is.available()], 0, is.available());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        }
+
+        public void close(){
+            try {
+                is.close();
+                System.out.println("Flujo de entrada cerrado");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
 }

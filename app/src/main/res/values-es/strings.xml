@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IMU - MdeT</string>
+    <string name="Reception">Pasar a los gráficos</string>
+    <string name="calibrate">Calibrar</string>
+    <string name="listDevices">Dispositivos conectados:\n</string>
+    <string name="start">\u25BA Iniciar</string>
+    <string name="stop">\u25FC Parar</string>
+</resources>

@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothSocket;
 import android.graphics.Color;
 import android.os.*;
 import android.app.Fragment;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     LineChart[] charts;
     ArrayList<ArrayList<LineDataSet>> sets = new ArrayList<>();
     LineData[] datos;
+    int maxX;
     // Layout con las gráficas
     LinearLayout graficos;
     // Para la escritura en archivo
@@ -49,7 +51,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             switch(msg.what){
                 case 1:
                     charts[msg.arg1].notifyDataSetChanged();
-                    charts[msg.arg1].setVisibleXRangeMaximum(200);
+                    charts[msg.arg1].setVisibleXRangeMaximum(maxX);
                     charts[msg.arg1].moveViewToX(msg.arg2);
                     break;
                 case 2:
@@ -64,7 +66,17 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     public ConnectedMultiMP() {
         // Required empty public constructor
     }
-
+    public double Inches(){
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        int width=dm.widthPixels;
+        int height=dm.heightPixels;
+        int dens=dm.densityDpi;
+        double wi=(double)width/(double)dens;
+        double hi=(double)height/(double)dens;
+        double x = Math.pow(wi,2);
+        double y = Math.pow(hi,2);
+        return Math.sqrt(x+y);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -89,6 +101,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
         ConfiguraGraficos();
         RevisarEstado();
+        maxX = Inches()>6?200:100;
         return view;
     }
 
@@ -143,6 +156,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         baseYaw = new float[cantSockets];
         basei = new int[cantSockets];
         System.out.println("Todo creado, listo para iniciar");
+
     }
 
     @Override
@@ -307,18 +321,11 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
         public void cancel(){
             try {
-                inputStream.close();
                 mmSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        PararTodo();
-        super.onDestroy();
     }
 
     public class Archivo extends AsyncTask<Integer,Void,Void>{
