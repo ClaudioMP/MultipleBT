@@ -62,7 +62,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     public ConnectionFragment() {
         // Required empty public constructor
     }
-
+    // TODO: Agregar un método que se encargue de vaciar los buffers de recepción
     public void GetAdapter(BluetoothAdapter a){
         btAdapter = a;
     }

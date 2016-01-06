@@ -164,8 +164,10 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 iniciar.setVisibility(View.GONE);
                 break;
             case R.id.Stop:
-                for(Recepcion th:threads){
-                    th.cancel();
+                for(int i=0;i<cantSockets;i++){
+                    System.out.println("Cerrando Thread " + i);
+                    threads[i].cancel();
+                    System.out.println("Thread " + i + " cerrado");
                 }
                 break;
             case R.id.Calibrar:
@@ -185,11 +187,11 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 break;
         }
     }
-
+    // TODO: Arreglar el Fatal signal 11
     public void PararTodo(){
         // Esta función se usará desde el MainActivity para frenar los threads cuando se vuelve atrás sin clickear el botón Parar
-        if(threads[0].isAlive()) {
-            for (int i = 0; i < cantSockets; i++) {
+        for (int i = 0; i < cantSockets; i++) {
+            if(threads[i].isAlive()) {
                 threads[i].cancel();
             }
         }
@@ -305,11 +307,18 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
         public void cancel(){
             try {
+                inputStream.close();
                 mmSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        PararTodo();
+        super.onDestroy();
     }
 
     public class Archivo extends AsyncTask<Integer,Void,Void>{

@@ -14,8 +14,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements Comunicador {
     BluetoothAdapter btAdapter;
     int BT_REQUEST = 1;
-    ConnectionFragment connectionFragment;
-    ConnectedMultiMP connectedMultiMP;
+    ConnectionFragment connectionFragment = null;
+    ConnectedMultiMP connectedMultiMP = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +74,9 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     public void onBackPressed() {
         if(getFragmentManager().getBackStackEntryCount()>1){
             getFragmentManager().popBackStack();
-            connectedMultiMP.PararTodo();
+            if(connectedMultiMP != null) {
+                connectedMultiMP.onDestroy();
+            }
         }
         else{
             super.onBackPressed();
