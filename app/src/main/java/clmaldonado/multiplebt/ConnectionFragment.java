@@ -110,12 +110,9 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     public void onClick(View v) {
         for(BluetoothSocket socket: sockets){
             if(socket.isConnected()){
-                System.out.println(socket.getRemoteDevice().getName()+R.string.connected);
+                System.out.println(socket.getRemoteDevice().getName()+" conectado");
             }
         }
-//        for(int i =0;i<cleaning.size();i++){
-//            cleaning.get(i).close();
-//        }
         comunicador.PasaSockets(sockets);
     }
 

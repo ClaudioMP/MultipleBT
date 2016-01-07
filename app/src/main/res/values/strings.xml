@@ -9,7 +9,6 @@
     <string name="NoBT">No se encontró adaptador Bluetooth</string>
     <string name="BTTurnedOn">Bluetooth habilitado correctamente</string>
     <string name="BTErrorTurnOn">Error al encender Bluetooth</string>
-    <string name="connected">conectado</string>
     <string name="ErrorSocket">Error al crear el socket</string>
     <string name="ConnectingError">Error al conectar con </string>
     <string name="Connectedwith">Conectado con </string>

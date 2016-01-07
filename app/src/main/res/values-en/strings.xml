@@ -13,7 +13,6 @@
     <string name="ErrorSocket">Error creating socket</string>
     <string name="NoBT">Bluetooth adapter was not found</string>
     <string name="closed"> is closed</string>
-    <string name="connected">connected</string>
     <string name="connection">The connection to</string>
     <string name="noData">No data momentaneously</string>
     <string name="noSD">SD card is not available</string>

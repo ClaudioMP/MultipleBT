@@ -99,6 +99,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         for(int i=0;i<cantSockets;i++){
             charts[i] = new LineChart(getActivity().getBaseContext());
             charts[i].setMinimumHeight(minHeight);
+            charts[i].setHardwareAccelerationEnabled(true);
             graficos.addView(charts[i]);
         }
         ConfiguraGraficos();

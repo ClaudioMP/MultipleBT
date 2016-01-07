@@ -13,7 +13,6 @@
     <string name="ErrorSocket">Error al crear el socket</string>
     <string name="NoBT">No se encontró adaptador Bluetooth</string>
     <string name="closed">está cerrada</string>
-    <string name="connected">conectado</string>
     <string name="connection">La conexión con </string>
     <string name="noData">No hay datos por el momento</string>
     <string name="noSD">La tarjeta SD no está disponible</string>
