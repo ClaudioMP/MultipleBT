@@ -294,13 +294,13 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 bytes = 0;
                 try {
                     while(bytes < 5){
-                        if(inputStream.available()>0) {
+                        //if(inputStream.available()>0) {
                             bytes += inputStream.read(buffer,bytes,1);
                             if (buffer[0] != -1) {
                                 buffer[0] = 0;
                                 bytes = 0;
                             }
-                        }
+                        //}
                     }
                 } catch (IOException e) {
                     System.out.println(e.toString());
