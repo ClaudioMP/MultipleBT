@@ -6,4 +6,16 @@
     <string name="listDevices">Connected devices:\n</string>
     <string name="start">\u25BA Start</string>
     <string name="stop">\u25FC Stop</string>
+    <string name="BTErrorTurnOn">Error turning Bluetooth on</string>
+    <string name="BTTurnedOn">Bluetooth correctly tuned on</string>
+    <string name="Connectedwith">Connected with </string>
+    <string name="ConnectingError">Error connecting with </string>
+    <string name="ErrorSocket">Error creating Socket</string>
+    <string name="NoBT">Bluetooth adapter not found</string>
+    <string name="closed"> is closed</string>
+    <string name="connected">connected</string>
+    <string name="connection">Connection with </string>
+    <string name="noData">No data for the moment</string>
+    <string name="noSD">SD card not available</string>
+    <string name="recvData">Receiving data from </string>
 </resources>

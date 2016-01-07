@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     }
     private void RevisaBluetooth(BluetoothAdapter bt){
         if(bt==null){
-            Toast.makeText(getApplicationContext(),"No se encontró adaptador Bluetooth",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),R.string.NoBT,Toast.LENGTH_SHORT).show();
         } else{
             if (!bt.isEnabled()){
                 Intent i = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -50,11 +50,11 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == BT_REQUEST) {
             if (resultCode == -1) {
-                Toast.makeText(getApplicationContext(), "Bluetooth encendido correctamente", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),R.string.BTTurnedOn, Toast.LENGTH_LONG).show();
                 PasarAlFragment();
             }
             if (resultCode == 0) {
-                Toast.makeText(getApplicationContext(), "Error al encender Bluetooth", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.BTErrorTurnOn, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -73,9 +73,6 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     public void onBackPressed() {
         if(getFragmentManager().getBackStackEntryCount()>1){
             getFragmentManager().popBackStack();
-            if(connectedMultiMP != null) {
-                connectedMultiMP.onDestroy();
-            }
         }
         else{
             super.onBackPressed();

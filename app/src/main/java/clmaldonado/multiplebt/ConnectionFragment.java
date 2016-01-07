@@ -110,7 +110,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     public void onClick(View v) {
         for(BluetoothSocket socket: sockets){
             if(socket.isConnected()){
-                System.out.println(socket.getRemoteDevice().getName()+" Conectado");
+                System.out.println(socket.getRemoteDevice().getName()+R.string.connected);
             }
         }
 //        for(int i =0;i<cleaning.size();i++){
@@ -137,7 +137,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 sock = dev.createRfcommSocketToServiceRecord(spp);
             } catch (IOException e) {
                 e.printStackTrace();
-                mHandler.obtainMessage(2,"Error al crear el Socket").sendToTarget();
+                mHandler.obtainMessage(2,R.string.ErrorSocket).sendToTarget();
             }
             mmSocket = sock;
         }
@@ -147,7 +147,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
             try {
                 mmSocket.connect();
             } catch (IOException e) {
-                mHandler.obtainMessage(2,"Error al conectar con "+mmDevice.getName()).sendToTarget();
+                mHandler.obtainMessage(2,R.string.ConnectingError+mmDevice.getName()).sendToTarget();
                 System.out.println(e.toString());
                 try {
                     mmSocket.close();
@@ -157,7 +157,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 return;
             }
             System.out.println("Conectado con " + mmDevice.getName());
-            mHandler.obtainMessage(3,"Conectado con "+mmDevice.getName()).sendToTarget();
+            mHandler.obtainMessage(3,R.string.Connectedwith+mmDevice.getName()).sendToTarget();
             mHandler.obtainMessage(1,mmSocket).sendToTarget();
         }
 
@@ -188,15 +188,6 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                     e.printStackTrace();
                     break;
                 }
-            }
-        }
-
-        public void close(){
-            try {
-                is.close();
-                System.out.println("Flujo de entrada cerrado");
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }

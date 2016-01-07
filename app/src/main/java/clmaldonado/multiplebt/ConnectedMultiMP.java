@@ -127,7 +127,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
         int j=0;
         for(LineChart c: charts){
-            c.setNoDataText("No hay datos por el momento");
+            c.setNoDataText(getActivity().getString(R.string.noData));
             c.setDoubleTapToZoomEnabled(false);
             c.setPinchZoom(false);
             c.setHighlightPerDragEnabled(false);
@@ -201,15 +201,6 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 break;
         }
     }
-    // TODO: Arreglar el Fatal signal 11
-    public void PararTodo(){
-        // Esta función se usará desde el MainActivity para frenar los threads cuando se vuelve atrás sin clickear el botón Parar
-        for (int i = 0; i < cantSockets; i++) {
-            if(threads[i].isAlive()) {
-                threads[i].cancel();
-            }
-        }
-    }
 
     private void Angulos(int sensor, int index, byte[] rawData){
         int[] d = new int[4];
@@ -251,7 +242,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             }
         }
         else{
-            Toast.makeText(getActivity().getBaseContext(),"SD card not available",Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity().getBaseContext(),R.string.noSD,Toast.LENGTH_LONG).show();
         }
 
     }
@@ -275,7 +266,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 e.printStackTrace();
             }
             inputStream = tmpIn;
-            mHandler.obtainMessage(3,"Recibiendo datos de "+name).sendToTarget();
+            mHandler.obtainMessage(3,R.string.recvData+name).sendToTarget();
             try {
                 inputStream.read(new byte[inputStream.available()],0,inputStream.available());
             } catch (IOException e) {
@@ -308,7 +299,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     }
                 } catch (IOException e) {
                     System.out.println(e.toString());
-                    mHandler.obtainMessage(2, "La conexión con "+name+" se cerró").sendToTarget();
+                    mHandler.obtainMessage(2, R.string.connection+name+R.string.closed).sendToTarget();
                     break;
                 }
                 //mHandler.obtainMessage(4,sensor-1,i,buffer).sendToTarget();
