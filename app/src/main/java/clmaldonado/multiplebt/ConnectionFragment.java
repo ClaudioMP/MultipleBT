@@ -157,7 +157,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 return;
             }
             System.out.println("Conectado con " + mmDevice.getName());
-            mHandler.obtainMessage(3,R.string.Connectedwith+mmDevice.getName()).sendToTarget();
+            mHandler.obtainMessage(3,getString(R.string.Connectedwith)+mmDevice.getName()).sendToTarget();
             mHandler.obtainMessage(1,mmSocket).sendToTarget();
         }
 
@@ -181,8 +181,9 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
         public void run(){
             while (true) {
                 try {
-                    if (is.available() > 100) {
-                        is.read(new byte[is.available()], 0, is.available());
+                    int av = is.available();
+                    if (av > 100) {
+                        is.read(new byte[av], 0, av);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -6,13 +6,13 @@
     <string name="listDevices">Dispositivos conectados:\n</string>
     <string name="start">\u25BA Iniciar</string>
     <string name="stop">\u25FC Parar</string>
-    <string name="BTErrorTurnOn">Error al encender Bluetooth</string>
-    <string name="BTTurnedOn">Bluetooth encendido correctamente</string>
+    <string name="BTErrorTurnOn">Error al habilitar Bluetooth</string>
+    <string name="BTTurnedOn">Bluetooth habilitado correctamente</string>
     <string name="Connectedwith">Conectado con </string>
     <string name="ConnectingError">Error al conectar con </string>
     <string name="ErrorSocket">Error al crear el socket</string>
     <string name="NoBT">No se encontró adaptador Bluetooth</string>
-    <string name="closed"> se cerró</string>
+    <string name="closed">está cerrada</string>
     <string name="connected">conectado</string>
     <string name="connection">La conexión con </string>
     <string name="noData">No hay datos por el momento</string>

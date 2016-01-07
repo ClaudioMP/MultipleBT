@@ -21,6 +21,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -92,11 +93,12 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         calibrar.setOnClickListener(this);
         parar.setClickable(false);
         calibrar.setClickable(false);
+        int minHeight = Inches()>6?300:200;
         // Gráficas
         graficos = (LinearLayout)view.findViewById(R.id.graficas);
         for(int i=0;i<cantSockets;i++){
             charts[i] = new LineChart(getActivity().getBaseContext());
-            charts[i].setMinimumHeight(300);
+            charts[i].setMinimumHeight(minHeight);
             graficos.addView(charts[i]);
         }
         ConfiguraGraficos();
@@ -266,7 +268,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 e.printStackTrace();
             }
             inputStream = tmpIn;
-            mHandler.obtainMessage(3,R.string.recvData+name).sendToTarget();
+            mHandler.obtainMessage(3,getString(R.string.recvData)+name).sendToTarget();
             try {
                 inputStream.read(new byte[inputStream.available()],0,inputStream.available());
             } catch (IOException e) {
@@ -276,34 +278,35 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
 
         public void run(){
             int i = 0,bytes;
+            byte[] buffer = new byte[5];
             // Esto es una especie de GC para evitar graficas de golpe
             try {
-                inputStream.read(new byte[inputStream.available()],0,inputStream.available());
+                int av = inputStream.available();
+                if(av>0) {
+                    inputStream.read(new byte[av], 0,av);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
             while(true){
                 i++;
-                byte[] buffer = new byte[5];
+                Arrays.fill(buffer,(byte)0);
                 bytes = 0;
                 try {
                     while(bytes < 5){
-                        //System.out.println(name + " Disponible: " + inputStream.available());
                         if(inputStream.available()>0) {
                             bytes += inputStream.read(buffer,bytes,1);
                             if (buffer[0] != -1) {
-                                buffer = new byte[5];
+                                buffer[0] = 0;
                                 bytes = 0;
                             }
                         }
                     }
                 } catch (IOException e) {
                     System.out.println(e.toString());
-                    mHandler.obtainMessage(2, R.string.connection+name+R.string.closed).sendToTarget();
+                    mHandler.obtainMessage(2, getString(R.string.connection)+" "+name+" "+getString(R.string.closed)).sendToTarget();
                     break;
                 }
-                //mHandler.obtainMessage(4,sensor-1,i,buffer).sendToTarget();
-                //System.out.println(mmSocket.getRemoteDevice().getName() + " Escribiendo " + i);
                 Angulos(sensor, i, buffer);
                 if(i%10==0) {
                     mHandler.obtainMessage(1, sensor, i).sendToTarget();
