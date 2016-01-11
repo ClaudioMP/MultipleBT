@@ -43,6 +43,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     FileOutputStream fout;
     String FileName = "Data.csv";
     // Para la calibración
+    boolean firstLine = true;
     float[] basePitch, baseRoll, baseYaw;
     int[] basei;
     Handler handler = new Handler(Looper.getMainLooper()){
@@ -328,7 +329,14 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         @Override
         protected Void doInBackground(Integer... p) {
             // sensor, index, w,x,y,z
-            String out = p[0]+","+p[1]+","+p[2]/100.00f+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f+"\n";
+            String out = "";
+            if(!firstLine){
+                out = "\n";
+            }
+            else{
+                firstLine = false;
+            }
+            out += p[0]+","+p[1]+","+p[2]/100.00f+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f;
             try {
                 fout.write(out.getBytes());
                 //System.out.println(out);
