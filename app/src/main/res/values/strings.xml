@@ -17,4 +17,6 @@
     <string name="recvData">Recibiendo datos de </string>
     <string name="noSD">La tarjeta SD no está disponible</string>
     <string name="noData">No hay datos por el momento</string>
+    <string name="AskName">Por favor ingrese el nombre del paciente</string>
+    <string name="ok">Aceptar</string>
 </resources>

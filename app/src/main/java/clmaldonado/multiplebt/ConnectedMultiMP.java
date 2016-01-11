@@ -22,6 +22,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 
 
 /**
@@ -146,7 +147,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
     }
 
-    public void getSockets(ArrayList<BluetoothSocket> socks){
+    public void getSockets(ArrayList<BluetoothSocket> socks,String nombre){
         Sockets = socks;
         for (BluetoothSocket s: Sockets){
             cantSockets+= s.isConnected()?1:0;
@@ -159,8 +160,10 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         baseRoll = new float[cantSockets];
         baseYaw = new float[cantSockets];
         basei = new int[cantSockets];
+        Calendar c = Calendar.getInstance();
+        FileName = nombre+"_"+c.get(Calendar.DATE)+(c.get(Calendar.MONTH)+1)+c.get(Calendar.YEAR)+"_"+c.get(Calendar.HOUR_OF_DAY)+c.get(Calendar.MINUTE)+".csv";
         System.out.println("Todo creado, listo para iniciar");
-
+        System.out.println(FileName);
     }
 
     @Override
@@ -347,4 +350,23 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            fout.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        try {
+            fout.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

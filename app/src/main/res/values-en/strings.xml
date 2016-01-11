@@ -17,4 +17,6 @@
     <string name="noData">No data momentaneously</string>
     <string name="noSD">SD card is not available</string>
     <string name="recvData">Receiving data from </string>
+    <string name="ok">Ok</string>
+    <string name="AskName">Please enter the patient\'s name</string>
 </resources>

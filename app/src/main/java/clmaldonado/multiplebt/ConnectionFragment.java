@@ -1,9 +1,11 @@
 package clmaldonado.multiplebt;
 
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
@@ -12,12 +14,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +38,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     ArrayList<BluetoothDevice> devices;
     ArrayList<BluetoothSocket> sockets;
     ArrayList<Limpieza> cleaning = new ArrayList<>();
+    public String name = "Default";
     Handler connectionHandler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
@@ -113,7 +111,23 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 System.out.println(socket.getRemoteDevice().getName()+" conectado");
             }
         }
-        comunicador.PasaSockets(sockets);
+        // Here we launch a Dialog requesting the name of the patient
+        View view = LayoutInflater.from(this.getActivity()).inflate(R.layout.dialog_name,null);
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this.getActivity());
+        alertBuilder.setView(view);
+        final EditText et = (EditText)view.findViewById(R.id.etAskName);
+        alertBuilder
+                .setMessage(R.string.AskName)
+                .setCancelable(false)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        name = et.getText().toString();
+                        comunicador.PasaSockets(sockets,name);
+                    }
+                });
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
     }
 
     private class ConnectionThread extends Thread{
@@ -134,7 +148,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 sock = dev.createRfcommSocketToServiceRecord(spp);
             } catch (IOException e) {
                 e.printStackTrace();
-                mHandler.obtainMessage(2,R.string.ErrorSocket).sendToTarget();
+                mHandler.obtainMessage(2,getString(R.string.ErrorSocket)).sendToTarget();
             }
             mmSocket = sock;
         }
