@@ -227,7 +227,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         angulos[0] = Math.toDegrees(-Math.asin(2*(x*z - w*y))) - basePitch[sensor]; // pitch
         angulos[1] = Math.toDegrees(Math.atan2(2 * (w * x + y * z), w * w - x * x - y * y + z * z)) - baseRoll[sensor]; // roll
         angulos[2] = Math.toDegrees(Math.atan2(2 * (x * y + w * z), 1 - 2 * (y * y + z * z))) - baseYaw[sensor];// yaw
-        datos[sensor].addXValue(time + "");
+        datos[sensor].addXValue(time/1000f + "");
         for(int i=0;i<3;i++){
             datos[sensor].addEntry(new Entry((((int) ((angulos[i] + 0.005) * 100)) / 100f), index), i);
         }
@@ -344,7 +344,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             else{
                 firstLine = false;
             }
-            out += p[0]+","+p[1]+","+p[2]+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f+","+p[6]/100.00f;
+            out += p[0]+","+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f+","+p[6]/100.00f;
             try {
                 fout.write(out.getBytes());
                 //System.out.println(out);
