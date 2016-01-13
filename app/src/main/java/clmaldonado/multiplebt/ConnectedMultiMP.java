@@ -38,13 +38,15 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     ArrayList<ArrayList<LineDataSet>> sets = new ArrayList<>();
     LineData[] datos;
     int maxX;
+    // Para las marcas de tiempo
+    long tstart;
     // Layout con las gráficas
     LinearLayout graficos;
     // Para la escritura en archivo
     FileOutputStream fout;
     String FileName = "Data.csv";
-    // Para la calibración
     boolean firstLine = true;
+    // Para la calibración
     float[] basePitch, baseRoll, baseYaw;
     int[] basei;
     Handler handler = new Handler(Looper.getMainLooper()){
@@ -171,6 +173,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         switch (v.getId()){
             case R.id.Receive:
                 int j = 0;
+                tstart = System.currentTimeMillis();
                 for(LineChart c: charts){
                     c.setData(datos[j++]);
                 }
@@ -209,7 +212,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
     }
 
-    private void Angulos(int sensor, int index, byte[] rawData){
+    private void Angulos(int sensor, int index,long time, byte[] rawData){
         int[] d = new int[4];
         for(int i=0;i<4;i++){
             d[i] = rawData[i+1]<0?(int)rawData[i+1]+256:(int)rawData[i+1];
@@ -224,11 +227,11 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         angulos[0] = Math.toDegrees(-Math.asin(2*(x*z - w*y))) - basePitch[sensor]; // pitch
         angulos[1] = Math.toDegrees(Math.atan2(2 * (w * x + y * z), w * w - x * x - y * y + z * z)) - baseRoll[sensor]; // roll
         angulos[2] = Math.toDegrees(Math.atan2(2 * (x * y + w * z), 1 - 2 * (y * y + z * z))) - baseYaw[sensor];// yaw
-        datos[sensor].addXValue(index + "");
+        datos[sensor].addXValue(time + "");
         for(int i=0;i<3;i++){
             datos[sensor].addEntry(new Entry((((int) ((angulos[i] + 0.005) * 100)) / 100f), index), i);
         }
-        new Archivo().execute(sensor,index,d[0],d[1],d[2],d[3]);
+        new Archivo().execute(sensor,index,(int)time,d[0],d[1],d[2],d[3]);
     }
 
     public void RevisarEstado(){
@@ -282,7 +285,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
 
         public void run(){
-            int i = 0,bytes;
+            int i=0,bytes;
             byte[] buffer = new byte[5];
             // Esto es una especie de GC para evitar graficas de golpe
             try {
@@ -295,8 +298,10 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             }
             while(true){
                 i++;
+                long tnow;
                 Arrays.fill(buffer,(byte)0);
                 bytes = 0;
+                tnow = System.currentTimeMillis() - tstart;
                 try {
                     while(bytes < 5){
                         //if(inputStream.available()>0) {
@@ -312,7 +317,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     mHandler.obtainMessage(2, getString(R.string.connection)+" "+name+" "+getString(R.string.closed)).sendToTarget();
                     break;
                 }
-                Angulos(sensor, i, buffer);
+                Angulos(sensor,i,tnow, buffer);
                 if(i%10==0) {
                     mHandler.obtainMessage(1, sensor, i).sendToTarget();
                 }
@@ -331,7 +336,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
 
         @Override
         protected Void doInBackground(Integer... p) {
-            // sensor, index, w,x,y,z
+            // sensor, index, time, w,x,y,z
             String out = "";
             if(!firstLine){
                 out = "\n";
@@ -339,7 +344,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             else{
                 firstLine = false;
             }
-            out += p[0]+","+p[1]+","+p[2]/100.00f+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f;
+            out += p[0]+","+p[1]+","+p[2]+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f+","+p[6]/100.00f;
             try {
                 fout.write(out.getBytes());
                 //System.out.println(out);
