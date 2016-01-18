@@ -113,6 +113,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     }
 
     public void ConfiguraGraficos(){
+        MyMarker marker = new MyMarker(getActivity().getBaseContext(),R.layout.mymarker);
         for(int i=0; i<cantSockets;i++) {
             sets.add(new ArrayList<LineDataSet>());
         }
@@ -124,7 +125,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             for(LineDataSet d: s){
                 d.setDrawCircles(false);
                 d.setDrawValues(false);
-                d.setHighlightEnabled(false);
+                d.setHighlightEnabled(true);
                 d.setLineWidth(2.5f);
             }
             s.get(0).setColor(Color.BLACK);
@@ -137,8 +138,8 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             c.setNoDataText(getActivity().getString(R.string.noData));
             c.setDoubleTapToZoomEnabled(false);
             c.setPinchZoom(false);
-            c.setHighlightPerDragEnabled(false);
-            c.setHighlightPerTapEnabled(false);
+            c.setHighlightPerDragEnabled(true);
+            c.setHighlightPerTapEnabled(true);
             c.setScaleYEnabled(false);
             c.setDescription("");
             c.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_RIGHT);
@@ -146,6 +147,8 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             c.setDrawBorders(true);
             c.getAxisRight().setDrawAxisLine(false);
             c.setDescription(Sockets.get(j++).getRemoteDevice().getName());
+            c.getAxisRight().setEnabled(false);
+            c.setMarkerView(marker);
         }
     }
 
