@@ -279,7 +279,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 e.printStackTrace();
             }
             inputStream = tmpIn;
-            mHandler.obtainMessage(3,getString(R.string.recvData)+name).sendToTarget();
+            mHandler.obtainMessage(3,getString(R.string.recvData)+" "+name).sendToTarget();
             try {
                 inputStream.read(new byte[inputStream.available()],0,inputStream.available());
             } catch (IOException e) {
