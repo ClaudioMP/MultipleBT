@@ -5,12 +5,14 @@ import android.bluetooth.BluetoothSocket;
 import android.graphics.Color;
 import android.os.*;
 import android.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -101,10 +103,21 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         // Gráficas
         graficos = (LinearLayout)view.findViewById(R.id.graficas);
         for(int i=0;i<cantSockets;i++){
+            CardView card = new CardView(getActivity().getBaseContext());
+            TextView tiempo = new TextView(getActivity().getBaseContext());
+            tiempo.setText("Tiempo[s]");
             charts[i] = new LineChart(getActivity().getBaseContext());
             charts[i].setMinimumHeight(minHeight);
             charts[i].setHardwareAccelerationEnabled(true);
-            graficos.addView(charts[i]);
+            card.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            card.setCardElevation(10f);
+            card.setRadius(5f);
+            card.setCardBackgroundColor(Color.parseColor("#e6e6e6"));
+            card.setUseCompatPadding(true);
+            card.setPreventCornerOverlap(true);
+            card.addView(charts[i]);
+            card.addView(tiempo);
+            graficos.addView(card);
         }
         ConfiguraGraficos();
         RevisarEstado();
