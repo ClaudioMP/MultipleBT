@@ -2,18 +2,17 @@ package clmaldonado.multiplebt;
 
 
 import android.bluetooth.BluetoothSocket;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.*;
 import android.app.Fragment;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -35,7 +34,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     ArrayList<BluetoothSocket> Sockets;
     int cantSockets = 0;
     Recepcion[] threads;
-    Button iniciar, parar, calibrar;
+    AppCompatButton iniciar, parar, calibrar;
     LineChart[] charts;
     ArrayList<ArrayList<LineDataSet>> sets = new ArrayList<>();
     LineData[] datos;
@@ -91,32 +90,45 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_connected_multi_m, container, false);
         // Botones
-        iniciar = (Button)view.findViewById(R.id.Receive);
-        parar = (Button)view.findViewById(R.id.Stop);
-        calibrar = (Button)view.findViewById(R.id.Calibrar);
+        iniciar = (AppCompatButton)view.findViewById(R.id.Receive);
+        parar = (AppCompatButton)view.findViewById(R.id.Stop);
+        calibrar = (AppCompatButton)view.findViewById(R.id.Calibrar);
         iniciar.setOnClickListener(this);
         parar.setOnClickListener(this);
         calibrar.setOnClickListener(this);
         parar.setClickable(false);
         calibrar.setClickable(false);
-        int minHeight = Inches()>6?300:200;
+        iniciar.setSupportBackgroundTintList(new ColorStateList(new int[][]{new int[0]}, new int[]{Color.parseColor("#0033cc")}));
+        parar.setSupportBackgroundTintList(new ColorStateList(new int[][]{new int[0]},new int[]{Color.parseColor("#0033cc")}));
+        calibrar.setSupportBackgroundTintList(new ColorStateList(new int[][]{new int[0]},new int[]{Color.parseColor("#0033cc")}));
+
+        int minHeight = Inches()>6?300:250;
         // Gráficas
         graficos = (LinearLayout)view.findViewById(R.id.graficas);
         for(int i=0;i<cantSockets;i++){
+            // Create the cardView to display the graphic
             CardView card = new CardView(getActivity().getBaseContext());
+            RelativeLayout rl = new RelativeLayout(getActivity().getBaseContext());
             TextView tiempo = new TextView(getActivity().getBaseContext());
-            tiempo.setText("Tiempo[s]");
             charts[i] = new LineChart(getActivity().getBaseContext());
-            charts[i].setMinimumHeight(minHeight);
+            charts[i].setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, minHeight));
             charts[i].setHardwareAccelerationEnabled(true);
+            charts[i].setId(View.generateViewId());
             card.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             card.setCardElevation(10f);
             card.setRadius(5f);
-            card.setCardBackgroundColor(Color.parseColor("#e6e6e6"));
+            card.setCardBackgroundColor(Color.parseColor("#eaeaea"));
             card.setUseCompatPadding(true);
             card.setPreventCornerOverlap(true);
-            card.addView(charts[i]);
-            card.addView(tiempo);
+            RelativeLayout.LayoutParams timeParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            timeParams.addRule(RelativeLayout.BELOW,charts[i].getId());
+            timeParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            tiempo.setTextColor(Color.BLACK);
+            tiempo.setTextSize(12f);
+            tiempo.setText(getString(R.string.tiempo));
+            rl.addView(charts[i]);
+            rl.addView(tiempo,timeParams);
+            card.addView(rl);
             graficos.addView(card);
         }
         ConfiguraGraficos();
@@ -202,6 +214,8 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 parar.setClickable(true);
                 calibrar.setClickable(true);
                 iniciar.setVisibility(View.GONE);
+                calibrar.setVisibility(View.VISIBLE);
+                parar.setVisibility(View.VISIBLE);
                 break;
             case R.id.Stop:
                 for(int i=0;i<cantSockets;i++){
@@ -209,6 +223,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     threads[i].cancel();
                     System.out.println("Thread " + i + " cerrado");
                 }
+                parar.setVisibility(View.GONE);
                 break;
             case R.id.Calibrar:
                 for(int i=0;i<cantSockets;i++){

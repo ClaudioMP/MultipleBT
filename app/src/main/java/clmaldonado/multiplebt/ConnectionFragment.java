@@ -26,10 +26,9 @@ import java.util.UUID;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ConnectionFragment extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener{
+public class ConnectionFragment extends Fragment implements AdapterView.OnItemClickListener{
     ListView lista;
     TextView tvConectados;
-    Button btnReceive;
     Comunicador comunicador;
     ArrayAdapter<String> arrayAdapter;
     Set<BluetoothDevice> paired_devices;
@@ -47,7 +46,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 case 1:
                     BluetoothSocket tmp = (BluetoothSocket)msg.obj;
                     sockets.add(tmp);
-                    tvConectados.append("\u2713 " + tmp.getRemoteDevice().getName() + "\n");
+                    tvConectados.append("\n\u2713 " + tmp.getRemoteDevice().getName());
                     cleaning.add(new Limpieza(tmp));
                     cleaning.get(cleaning.size()-1).start();
                     break;
@@ -78,8 +77,6 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
         sockets = new ArrayList<>();
         lista = (ListView) view.findViewById(R.id.Lista);
         tvConectados = (TextView)view.findViewById(R.id.tvConectados);
-        btnReceive = (Button)view.findViewById(R.id.btnNext);
-        btnReceive.setOnClickListener(this);
         paired_devices = btAdapter.getBondedDevices();
         plist= new String[paired_devices.size()];
         int j = 0;
@@ -104,8 +101,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
 
     }
 
-    @Override
-    public void onClick(View v) {
+    public void PasarALosGraficos(){
         for(BluetoothSocket socket: sockets){
             if(socket.isConnected()){
                 System.out.println(socket.getRemoteDevice().getName()+" conectado");

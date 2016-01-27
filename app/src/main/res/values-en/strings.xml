@@ -3,9 +3,9 @@
     <string name="app_name">IMU - MdeT</string>
     <string name="Reception">Go to graphics</string>
     <string name="calibrate">Calibrate</string>
-    <string name="listDevices">Connected devices:\n</string>
-    <string name="start">\u25BA Start</string>
-    <string name="stop">\u25FC Stop</string>
+    <string name="listDevices">Connected devices:</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
     <string name="BTErrorTurnOn">Error enabling Bluetooth</string>
     <string name="BTTurnedOn">Bluetooth correctly enabled</string>
     <string name="Connectedwith">Connected to </string>
@@ -19,4 +19,6 @@
     <string name="recvData">Receiving data from </string>
     <string name="ok">Ok</string>
     <string name="AskName">Please enter the patient\'s name</string>
+    <string name="tiempo">Time [s]</string>
+    <string name="avdevices">Available devices</string>
 </resources>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">IMU - MdeT</string>
-    <string name="start">\u25BA Iniciar</string>
-    <string name="stop">\u25FC Parar</string>
+    <string name="start">Iniciar</string>
+    <string name="stop">Parar</string>
     <string name="calibrate">Calibrar</string>
-    <string name="listDevices">Dispositivos conectados:\n</string>
+    <string name="listDevices">Dispositivos conectados:</string>
     <string name="Reception">Pasar a los gráficos</string>
     <string name="NoBT">No se encontró adaptador Bluetooth</string>
     <string name="BTTurnedOn">Bluetooth habilitado correctamente</string>
@@ -19,4 +19,6 @@
     <string name="noData">No hay datos por el momento</string>
     <string name="AskName">Por favor ingrese el nombre del paciente</string>
     <string name="ok">Aceptar</string>
+    <string name="tiempo">Tiempo [s]</string>
+    <string name="avdevices">Dispositivos disponibles</string>
 </resources>
