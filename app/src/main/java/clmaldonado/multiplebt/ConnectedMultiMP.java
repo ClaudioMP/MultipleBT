@@ -19,6 +19,7 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -144,14 +145,16 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
         int i = 0;
         for(ArrayList<LineDataSet> s:sets){
-            s.add(new LineDataSet(new ArrayList<Entry>(),"Pitch"));
-            s.add(new LineDataSet(new ArrayList<Entry>(),"Roll"));
-            s.add(new LineDataSet(new ArrayList<Entry>(),"Yaw"));
+            s.add(new LineDataSet(new ArrayList<Entry>(), "Pitch"));
+            s.add(new LineDataSet(new ArrayList<Entry>(), "Roll"));
+            s.add(new LineDataSet(new ArrayList<Entry>(), "Yaw"));
             for(LineDataSet d: s){
                 d.setDrawCircles(false);
                 d.setDrawValues(false);
                 d.setHighlightEnabled(true);
                 d.setLineWidth(2.5f);
+                d.setHighLightColor(Color.parseColor("#0033cc"));
+                d.setHighlightLineWidth(.8f);
             }
             s.get(0).setColor(Color.BLACK);
             s.get(1).setColor(Color.RED);
@@ -165,7 +168,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             c.setPinchZoom(false);
             c.setHighlightPerDragEnabled(true);
             c.setHighlightPerTapEnabled(true);
-            c.setScaleYEnabled(false);
+            c.setScaleYEnabled(true);
             c.setDescription("");
             c.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_RIGHT);
             c.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -222,6 +225,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     System.out.println("Cerrando Thread " + i);
                     threads[i].cancel();
                     System.out.println("Thread " + i + " cerrado");
+                    new Archivo().execute(i,-1,-1,(int)(basePitch[i]*100),(int)(baseRoll[i]*100),(int)(baseYaw[i]*100));
                 }
                 parar.setVisibility(View.GONE);
                 break;
@@ -375,7 +379,12 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             else{
                 firstLine = false;
             }
-            out += p[0]+","+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f+","+p[6]/100.00f;
+            if(p[1]!=-1){
+                out += p[0]+","+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+ "," + p[5] / 100.00f+","+p[6]/100.00f;
+            }
+            else{
+                out+=p[0]+","+p[1]+","+p[2]+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f;
+            }
             try {
                 fout.write(out.getBytes());
                 //System.out.println(out);
@@ -396,13 +405,4 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        try {
-            fout.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
