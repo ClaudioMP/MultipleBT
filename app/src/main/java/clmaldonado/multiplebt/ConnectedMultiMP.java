@@ -35,6 +35,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     ArrayList<BluetoothSocket> Sockets;
     int cantSockets = 0;
     Recepcion[] threads;
+    String[] Sensors;
     AppCompatButton iniciar, parar, calibrar;
     LineChart[] charts;
     ArrayList<ArrayList<LineDataSet>> sets = new ArrayList<>();
@@ -180,10 +181,10 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
     }
 
-    public void getSockets(ArrayList<BluetoothSocket> socks,String nombre){
+    public void getSockets(ArrayList<BluetoothSocket> socks,String nombre) {
         Sockets = socks;
-        for (BluetoothSocket s: Sockets){
-            cantSockets+= s.isConnected()?1:0;
+        for (BluetoothSocket s : Sockets) {
+            cantSockets += s.isConnected() ? 1 : 0;
         }
         System.out.println("Recibí los " + cantSockets + " sockets");
         threads = new Recepcion[cantSockets];
@@ -193,10 +194,20 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         baseRoll = new float[cantSockets];
         baseYaw = new float[cantSockets];
         basei = new int[cantSockets];
+        Sensors = new String[cantSockets];
+        Sensors = getNames(Sockets);
         Calendar c = Calendar.getInstance();
         FileName = nombre+"_"+c.get(Calendar.DATE)+(c.get(Calendar.MONTH)+1)+c.get(Calendar.YEAR)+"_"+c.get(Calendar.HOUR_OF_DAY)+c.get(Calendar.MINUTE)+".csv";
         System.out.println("Todo creado, listo para iniciar");
         System.out.println(FileName);
+    }
+
+    private String[] getNames(ArrayList<BluetoothSocket> s){
+        String[] names = new String[s.size()];
+        for(int i=0;i<s.size();i++){
+            names[i] = s.get(i).getRemoteDevice().getName().toString();
+        }
+        return names;
     }
 
     @Override
@@ -380,10 +391,10 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 firstLine = false;
             }
             if(p[1]!=-1){
-                out += p[0]+","+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+ "," + p[5] / 100.00f+","+p[6]/100.00f;
+                out += Sensors[p[0]]+","+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+ "," + p[5] / 100.00f+","+p[6]/100.00f;
             }
             else{
-                out+=p[0]+","+p[1]+","+p[2]+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f;
+                out+=Sensors[p[0]]+","+p[1]+","+p[2]+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f;
             }
             try {
                 fout.write(out.getBytes());
