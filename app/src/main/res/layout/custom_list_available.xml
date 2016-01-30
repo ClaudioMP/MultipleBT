@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="33dp">
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_bluetooth_black_24dp"
+        android:id="@+id/imagen"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text = "Dispositivo"
+        android:id="@+id/tvNombre"
+        android:layout_marginLeft="5dp"
+        android:textColor="#000"
+        android:textSize="18dp"
+        android:layout_toRightOf="@id/imagen"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvNombre"
+        android:id="@+id/tvMac"
+        android:textColor="#000"
+        android:layout_alignLeft="@id/tvNombre"
+        android:text="Dirección MAC"
+        android:textSize="12dp"/>
+</RelativeLayout>

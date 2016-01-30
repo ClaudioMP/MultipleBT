@@ -28,15 +28,19 @@ import java.util.UUID;
  */
 public class ConnectionFragment extends Fragment implements AdapterView.OnItemClickListener{
     ListView lista;
-    TextView tvConectados;
     Comunicador comunicador;
-    ArrayAdapter<String> arrayAdapter;
+    CustomAdapter arrayAdapter;
     Set<BluetoothDevice> paired_devices;
     BluetoothAdapter btAdapter;
-    String[] plist;
+    ArrayList<Dispositivo> plist;
     ArrayList<BluetoothDevice> devices;
     ArrayList<BluetoothSocket> sockets;
     ArrayList<Limpieza> cleaning = new ArrayList<>();
+    // To the ListView of Connected Devices
+    ListView connecteddevices;
+    CustomAdapter customAdapterconnected;
+    ArrayList<Dispositivo> conectados;
+
     public String name = "Default";
     Handler connectionHandler = new Handler(Looper.getMainLooper()){
         @Override
@@ -46,7 +50,8 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 case 1:
                     BluetoothSocket tmp = (BluetoothSocket)msg.obj;
                     sockets.add(tmp);
-                    tvConectados.append("\n\u2713 " + tmp.getRemoteDevice().getName());
+                    conectados.add(new Dispositivo(tmp.getRemoteDevice().getName(),tmp.getRemoteDevice().getAddress()));
+                    customAdapterconnected.notifyDataSetChanged();
                     cleaning.add(new Limpieza(tmp));
                     cleaning.get(cleaning.size()-1).start();
                     break;
@@ -76,16 +81,21 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
         devices = new ArrayList<>();
         sockets = new ArrayList<>();
         lista = (ListView) view.findViewById(R.id.Lista);
-        tvConectados = (TextView)view.findViewById(R.id.tvConectados);
         paired_devices = btAdapter.getBondedDevices();
-        plist= new String[paired_devices.size()];
         int j = 0;
+        plist = new ArrayList<>();
         for (BluetoothDevice dev: paired_devices){
-            plist[j]=dev.getName()+"\n"+dev.getAddress();
+            plist.add(new Dispositivo(dev.getName(),dev.getAddress()));
             devices.add(j++,dev);
             System.out.println("Agregado: "+ dev.getName());
         }
-        arrayAdapter = new ArrayAdapter<>(getActivity().getBaseContext(),android.R.layout.simple_list_item_1,plist);
+        // Lista de dispositivos conectados
+        connecteddevices = (ListView)view.findViewById(R.id.ListaConectados);
+        conectados = new ArrayList<>();
+        customAdapterconnected = new CustomAdapter(getActivity().getApplicationContext(),conectados,R.layout.custom_list_connected);
+        connecteddevices.setAdapter(customAdapterconnected);
+        // TODO: Modificar el ListView de dispositivos disponibles
+        arrayAdapter = new CustomAdapter(getActivity().getApplicationContext(),plist,R.layout.custom_list_available);
         lista.setAdapter(arrayAdapter);
         lista.setOnItemClickListener(this);
         return view;
@@ -96,7 +106,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String aviso = "Conectando con "+devices.get(position).getName();
-        Toast.makeText(getActivity().getBaseContext(), aviso, Toast.LENGTH_SHORT);
+        Toast.makeText(getActivity().getBaseContext(), aviso, Toast.LENGTH_SHORT).show();
         new ConnectionThread(devices.get(position), connectionHandler, btAdapter).start();
 
     }
@@ -118,7 +128,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        name = et.getText().toString();
+                        name = et.getText().equals("")?name:et.getText().toString();
                         comunicador.PasaSockets(sockets,name);
                     }
                 });
