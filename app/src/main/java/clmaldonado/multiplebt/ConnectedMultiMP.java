@@ -116,8 +116,8 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             charts[i].setHardwareAccelerationEnabled(true);
             charts[i].setId(View.generateViewId());
             card.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            card.setCardElevation(10f);
-            card.setRadius(5f);
+            card.setCardElevation(5f);
+            card.setRadius(0f);
             card.setCardBackgroundColor(Color.parseColor("#eaeaea"));
             card.setUseCompatPadding(true);
             card.setPreventCornerOverlap(true);
@@ -390,10 +390,10 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 firstLine = false;
             }
             if(p[1]!=-1){
-                out += Sensors[p[0]]+","+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+ "," + p[5] / 100.00f+","+p[6]/100.00f;
+                out += Sensors[p[0]]+","+p[0]+","+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+ "," + p[5] / 100.00f+","+p[6]/100.00f;
             }
             else{
-                out+=Sensors[p[0]]+","+p[1]+","+p[2]+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f;
+                out+=Sensors[p[0]]+","+p[0]+","+p[1]+","+p[2]+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f;
             }
             try {
                 fout.write(out.getBytes());

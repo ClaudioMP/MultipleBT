@@ -38,8 +38,13 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.next_Icon:
-                connectionFragment.PasarALosGraficos();
-                item.setVisible(false);
+                if(connectionFragment.sockets.size()!=0) {
+                    connectionFragment.PasarALosGraficos();
+                    item.setVisible(false);
+                }
+                else{
+                    Toast.makeText(this,getString(R.string.no_sensors),Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);

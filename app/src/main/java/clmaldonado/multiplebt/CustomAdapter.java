@@ -4,15 +4,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.*;
 
 import java.util.ArrayList;
 
 /**
  * Created by claudio on 30-01-16.
  */
+
 public class CustomAdapter extends BaseAdapter {
     private Context context;
     private ArrayList<Dispositivo> dispositivos;
@@ -41,14 +40,12 @@ public class CustomAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if(convertView == null){
-            LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = (RelativeLayout)inflater.inflate(Resource,null);
-            TextView Nombre = (TextView)convertView.findViewById(R.id.tvNombre);
-            TextView Direcc = (TextView)convertView.findViewById(R.id.tvMac);
-            Nombre.setText(dispositivos.get(position).getName());
-            Direcc.setText(dispositivos.get(position).getMAC());
-        }
-        return convertView;
+        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View convertview = inflater.inflate(Resource,null);
+        TextView Nombre = (TextView)convertview.findViewById(R.id.tvNombre);
+        TextView Direcc = (TextView)convertview.findViewById(R.id.tvMac);
+        Nombre.setText(dispositivos.get(position).getName());
+        Direcc.setText(dispositivos.get(position).getMAC());
+        return convertview;
     }
 }

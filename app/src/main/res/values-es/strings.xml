@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">IMU - MdeT</string>
     <string name="Reception">Pasar a los gráficos</string>
     <string name="calibrate">Calibrar</string>
     <string name="listDevices">Dispositivos conectados:</string>
@@ -21,4 +20,6 @@
     <string name="AskName">Por favor ingrese el nombre del paciente</string>
     <string name="tiempo">Tiempo [s]</string>
     <string name="avdevices">Dispositivos disponibles</string>
+    <string name="no_sensors">No hay sensores conectados, conecta al menos uno</string>
+    <string name="Connectingto">Conectando con</string>
 </resources>

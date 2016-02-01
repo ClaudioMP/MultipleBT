@@ -34,7 +34,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     BluetoothAdapter btAdapter;
     ArrayList<Dispositivo> plist;
     ArrayList<BluetoothDevice> devices;
-    ArrayList<BluetoothSocket> sockets;
+    public ArrayList<BluetoothSocket> sockets;
     ArrayList<Limpieza> cleaning = new ArrayList<>();
     // To the ListView of Connected Devices
     ListView connecteddevices;
@@ -92,10 +92,9 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
         // Lista de dispositivos conectados
         connecteddevices = (ListView)view.findViewById(R.id.ListaConectados);
         conectados = new ArrayList<>();
-        customAdapterconnected = new CustomAdapter(getActivity().getApplicationContext(),conectados,R.layout.custom_list_connected);
+        customAdapterconnected = new CustomAdapter(getActivity().getBaseContext(),conectados,R.layout.custom_list_connected);
         connecteddevices.setAdapter(customAdapterconnected);
-        // TODO: Modificar el ListView de dispositivos disponibles
-        arrayAdapter = new CustomAdapter(getActivity().getApplicationContext(),plist,R.layout.custom_list_available);
+        arrayAdapter = new CustomAdapter(getActivity().getBaseContext(),plist,R.layout.custom_list_available);
         lista.setAdapter(arrayAdapter);
         lista.setOnItemClickListener(this);
         return view;
@@ -105,35 +104,36 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String aviso = "Conectando con "+devices.get(position).getName();
+        String aviso = getString(R.string.Connectingto)+" "+devices.get(position).getName();
         Toast.makeText(getActivity().getBaseContext(), aviso, Toast.LENGTH_SHORT).show();
         new ConnectionThread(devices.get(position), connectionHandler, btAdapter).start();
 
     }
 
     public void PasarALosGraficos(){
-        for(BluetoothSocket socket: sockets){
-            if(socket.isConnected()){
-                System.out.println(socket.getRemoteDevice().getName()+" conectado");
+
+            for (BluetoothSocket socket : sockets) {
+                if (socket.isConnected()) {
+                    System.out.println(socket.getRemoteDevice().getName() + " conectado");
+                }
             }
-        }
-        // Here we launch a Dialog requesting the name of the patient
-        View view = LayoutInflater.from(this.getActivity()).inflate(R.layout.dialog_name,null);
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this.getActivity());
-        alertBuilder.setView(view);
-        final EditText et = (EditText)view.findViewById(R.id.etAskName);
-        alertBuilder
-                .setMessage(R.string.AskName)
-                .setCancelable(false)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        name = et.getText().equals("")?name:et.getText().toString();
-                        comunicador.PasaSockets(sockets,name);
-                    }
-                });
-        AlertDialog alert = alertBuilder.create();
-        alert.show();
+            // Here we launch a Dialog requesting the name of the patient
+            View view = LayoutInflater.from(this.getActivity()).inflate(R.layout.dialog_name, null);
+            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this.getActivity());
+            alertBuilder.setView(view);
+            final EditText et = (EditText) view.findViewById(R.id.etAskName);
+            alertBuilder
+                    .setMessage(R.string.AskName)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            name = et.getText().equals("") ? name : et.getText().toString();
+                            comunicador.PasaSockets(sockets, name);
+                        }
+                    });
+            AlertDialog alert = alertBuilder.create();
+            alert.show();
     }
 
     private class ConnectionThread extends Thread{
