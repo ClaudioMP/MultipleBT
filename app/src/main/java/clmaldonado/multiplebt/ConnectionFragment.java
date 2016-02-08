@@ -5,12 +5,10 @@ import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Bundle;
+import android.os.*;
 import android.app.Fragment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +38,10 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     ListView connecteddevices;
     CustomAdapter customAdapterconnected;
     ArrayList<Dispositivo> conectados;
-
+    int joint;
+    int pos;
+    // To notify by hardware that a device was connected successfully
+    Vibrator vibrator;
     public String name = "Default";
     Handler connectionHandler = new Handler(Looper.getMainLooper()){
         @Override
@@ -48,12 +49,43 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
             super.handleMessage(msg);
             switch (msg.what){
                 case 1:
-                    BluetoothSocket tmp = (BluetoothSocket)msg.obj;
+                    final BluetoothSocket tmp = (BluetoothSocket)msg.obj;
                     sockets.add(tmp);
-                    conectados.add(new Dispositivo(tmp.getRemoteDevice().getName(),tmp.getRemoteDevice().getAddress()));
-                    customAdapterconnected.notifyDataSetChanged();
                     cleaning.add(new Limpieza(tmp));
                     cleaning.get(cleaning.size()-1).start();
+                    // This part is only for showing
+                    if(vibrator.hasVibrator()){
+                        System.out.println("Vibre");
+                        vibrator.vibrate(200);
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    final View v = LayoutInflater.from(getActivity().getBaseContext()).inflate(R.layout.selector, null);
+                    builder.setView(v);
+                    builder.setTitle(tmp.getRemoteDevice().getName() + " " + getString(R.string.successConnection));
+                    builder.setIcon(R.drawable.ic_bluetooth_connected_black_24dp);
+                    builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            System.out.println(joint);
+                            conectados.add(new Dispositivo(tmp.getRemoteDevice().getName(), joint));
+                            customAdapterconnected.notifyDataSetChanged();
+                            System.out.println("pos: " + pos);
+                            plist.remove(pos);
+                            devices.remove(pos);
+                            arrayAdapter.notifyDataSetChanged();
+                        }
+                    });
+                    RadioGroup rg = (RadioGroup)v.findViewById(R.id.RadioGroup);
+                    rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(RadioGroup group, int checkedId) {
+                            RadioButton btn = (RadioButton)v.findViewById(checkedId);
+                            joint = Integer.parseInt(btn.getTag().toString());
+                            System.out.println("joint: "+joint);
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
                     break;
                 case 2:
                     Toast.makeText(getActivity().getBaseContext(),"\u26A0 "+msg.obj,Toast.LENGTH_SHORT).show();
@@ -97,6 +129,8 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
         arrayAdapter = new CustomAdapter(getActivity().getBaseContext(),plist,R.layout.custom_list_available);
         lista.setAdapter(arrayAdapter);
         lista.setOnItemClickListener(this);
+        // Vibrator
+        vibrator = (Vibrator)getActivity().getBaseContext().getSystemService(Context.VIBRATOR_SERVICE);
         return view;
 
     }
@@ -107,7 +141,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
         String aviso = getString(R.string.Connectingto)+" "+devices.get(position).getName();
         Toast.makeText(getActivity().getBaseContext(), aviso, Toast.LENGTH_SHORT).show();
         new ConnectionThread(devices.get(position), connectionHandler, btAdapter).start();
-
+        pos = position;
     }
 
     public void PasarALosGraficos(){
@@ -129,7 +163,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             name = et.getText().equals("") ? name : et.getText().toString();
-                            comunicador.PasaSockets(sockets, name);
+                            comunicador.PasaSockets(sockets, name, conectados);
                         }
                     });
             AlertDialog alert = alertBuilder.create();

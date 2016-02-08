@@ -10,5 +10,5 @@ import java.util.ArrayList;
 public interface Comunicador {
     // Esta función se utiliza para pasar el conjunto de sockets
     // Conectados al fragment que los manejará
-    public void PasaSockets(ArrayList<BluetoothSocket> sockets,String name);
+    public void PasaSockets(ArrayList<BluetoothSocket> sockets,String name,ArrayList<Dispositivo> Dispositivos);
 }

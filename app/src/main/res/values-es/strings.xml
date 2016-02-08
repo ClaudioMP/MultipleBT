@@ -22,4 +22,8 @@
     <string name="avdevices">Dispositivos disponibles</string>
     <string name="no_sensors">No hay sensores conectados, conecta al menos uno</string>
     <string name="Connectingto">Conectando con</string>
+    <string name="ankle">Tobillo</string>
+    <string name="hip">Cadera</string>
+    <string name="knee">Rodilla</string>
+    <string name="successConnection">conectado, seleccione articulación</string>
 </resources>

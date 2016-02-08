@@ -86,9 +86,9 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     }
 
     @Override
-    public void PasaSockets(ArrayList<BluetoothSocket> sockets, String name) {
+    public void PasaSockets(ArrayList<BluetoothSocket> sockets, String name,ArrayList<Dispositivo> dispositivos) {
         connectedMultiMP = new ConnectedMultiMP();
-        connectedMultiMP.getSockets(sockets, name);
+        connectedMultiMP.getSockets(sockets, name,dispositivos);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.Layout, connectedMultiMP);
         fragmentTransaction.addToBackStack(null);

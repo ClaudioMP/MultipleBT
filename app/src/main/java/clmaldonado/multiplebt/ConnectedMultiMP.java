@@ -39,6 +39,8 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     LineChart[] charts;
     ArrayList<ArrayList<LineDataSet>> sets = new ArrayList<>();
     LineData[] datos;
+    ArrayList<Dispositivo> devices;
+    String[] Joints;
     int maxX;
     // Para las marcas de tiempo
     long tstart;
@@ -102,7 +104,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         iniciar.setSupportBackgroundTintList(new ColorStateList(new int[][]{new int[0]}, new int[]{Color.parseColor("#0033cc")}));
         parar.setSupportBackgroundTintList(new ColorStateList(new int[][]{new int[0]},new int[]{Color.parseColor("#0033cc")}));
         calibrar.setSupportBackgroundTintList(new ColorStateList(new int[][]{new int[0]},new int[]{Color.parseColor("#0033cc")}));
-
+        Joints = getResources().getStringArray(R.array.Joints);
         int minHeight = Inches()>6?300:250;
         // Gráficas
         graficos = (LinearLayout)view.findViewById(R.id.graficas);
@@ -174,13 +176,14 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             c.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
             c.setDrawBorders(true);
             c.getAxisRight().setDrawAxisLine(false);
-            c.setDescription(Sockets.get(j++).getRemoteDevice().getName());
+            c.setDescription(Joints[devices.get(j).getJoint() - 1]);
+            System.out.println(Joints[devices.get(j++).getJoint()-1]);
             c.getAxisRight().setEnabled(false);
             c.setMarkerView(marker);
         }
     }
 
-    public void getSockets(ArrayList<BluetoothSocket> socks,String nombre) {
+    public void getSockets(ArrayList<BluetoothSocket> socks,String nombre,ArrayList<Dispositivo> dispositivos) {
         Sockets = socks;
         for (BluetoothSocket s : Sockets) {
             cantSockets += s.isConnected() ? 1 : 0;
@@ -199,6 +202,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         FileName = nombre+"_"+c.get(Calendar.DATE)+(c.get(Calendar.MONTH)+1)+c.get(Calendar.YEAR)+"_"+c.get(Calendar.HOUR_OF_DAY)+c.get(Calendar.MINUTE)+".csv";
         System.out.println("Todo creado, listo para iniciar");
         System.out.println(FileName);
+        devices = dispositivos;
     }
 
     private String[] getNames(ArrayList<BluetoothSocket> s){
@@ -308,6 +312,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         private InputStream inputStream;
         private String name;
         private int sensor;
+        private int joint;
 
         public Recepcion(BluetoothSocket s,Handler h,int n){
             mmSocket = s;
@@ -381,7 +386,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
 
         @Override
         protected Void doInBackground(Integer... p) {
-            // sensor, index, time, w,x,y,z
+            // sensor,index, time, w,x,y,z
             String out = "";
             if(!firstLine){
                 out = "\n";
@@ -389,11 +394,12 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             else{
                 firstLine = false;
             }
-            if(p[1]!=-1){
-                out += Sensors[p[0]]+","+p[0]+","+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+ "," + p[5] / 100.00f+","+p[6]/100.00f;
+            if(p[2]!=-1){
+                out += Sensors[p[0]]+","+p[0]+","+devices.get(p[0]).getJoint()+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+ "," + p[5] / 100.00f+","+p[6]/100.00f;
             }
             else{
-                out+=Sensors[p[0]]+","+p[0]+","+p[1]+","+p[2]+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f;
+                //
+                out+=Sensors[p[0]]+","+p[0]+","+devices.get(p[0]).getJoint()+","+p[2]+","+p[3]/100.00f+","+p[4]/100.00f+","+p[5]/100.00f;
             }
             try {
                 fout.write(out.getBytes());

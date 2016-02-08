@@ -15,12 +15,14 @@ import java.util.ArrayList;
 public class CustomAdapter extends BaseAdapter {
     private Context context;
     private ArrayList<Dispositivo> dispositivos;
+    private String[] Joints;
     private int Resource;
 
     public CustomAdapter(Context context, ArrayList<Dispositivo> dispositivos,int LayoutResource){
         this.context = context;
         this.dispositivos = dispositivos;
         this.Resource = LayoutResource;
+        Joints = context.getResources().getStringArray(R.array.Joints);
     }
 
     @Override
@@ -45,7 +47,11 @@ public class CustomAdapter extends BaseAdapter {
         TextView Nombre = (TextView)convertview.findViewById(R.id.tvNombre);
         TextView Direcc = (TextView)convertview.findViewById(R.id.tvMac);
         Nombre.setText(dispositivos.get(position).getName());
-        Direcc.setText(dispositivos.get(position).getMAC());
+        if(Resource==R.layout.custom_list_connected){
+            Direcc.setText(Joints[dispositivos.get(position).getJoint()-1]);
+        }
+        else
+            Direcc.setText(dispositivos.get(position).getMAC());
         return convertview;
     }
 }

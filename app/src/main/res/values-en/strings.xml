@@ -22,4 +22,8 @@
     <string name="avdevices">Available devices</string>
     <string name="no_sensors">There\'s no sensors connected, connect at least one</string>
     <string name="Connectingto">Connecting to</string>
+    <string name="ankle">Ankle</string>
+    <string name="hip">Hip</string>
+    <string name="knee">Knee</string>
+    <string name="successConnection">connected, select joint</string>
 </resources>
