@@ -272,7 +272,6 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         y = (d[2]/100.00f)-1;
         z = (d[3]/100.00f)-1;
         double[] angulos = new double[3];
-        //index -= basei[sensor];
         angulos[0] = Math.toDegrees(-Math.asin(2*(x*z - w*y))) - basePitch[sensor]; // pitch
         angulos[1] = Math.toDegrees(Math.atan2(2 * (w * x + y * z), w * w - x * x - y * y + z * z)) - baseRoll[sensor]; // roll
         angulos[2] = Math.toDegrees(Math.atan2(2 * (x * y + w * z), 1 - 2 * (y * y + z * z))) - baseYaw[sensor];// yaw
@@ -387,6 +386,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         @Override
         protected Void doInBackground(Integer... p) {
             // sensor,index, time, w,x,y,z
+            // Sensor (nombre), sensor index, joint index, sample number, time, w,x,y,z
             String out = "";
             if(!firstLine){
                 out = "\n";
@@ -395,7 +395,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                 firstLine = false;
             }
             if(p[2]!=-1){
-                out += Sensors[p[0]]+","+p[0]+","+devices.get(p[0]).getJoint()+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+ "," + p[5] / 100.00f+","+p[6]/100.00f;
+                out += Sensors[p[0]]+","+p[0]+","+devices.get(p[0]).getJoint()+","+p[1]+","+p[2]/1000f+","+p[3]/100.00f+","+p[4]/100.00f+ "," + p[5] / 100.00f+","+p[6]/100.00f;
             }
             else{
                 //
