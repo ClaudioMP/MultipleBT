@@ -239,7 +239,13 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     System.out.println("Cerrando Thread " + i);
                     threads[i].cancel();
                     System.out.println("Thread " + i + " cerrado");
-                    new Archivo().execute(i,-1,-1,(int)(basePitch[i]*100),(int)(baseRoll[i]*100),(int)(baseYaw[i]*100));
+                    if(i==cantSockets-1){
+                        new Archivo().execute(i,-1,-1,(int)(basePitch[i]*100),(int)(baseRoll[i]*100),(int)(baseYaw[i]*100),1,1);
+                    }
+                    else{
+                        new Archivo().execute(i,-1,-1,(int)(basePitch[i]*100),(int)(baseRoll[i]*100),(int)(baseYaw[i]*100));
+                    }
+
                 }
                 parar.setVisibility(View.GONE);
                 break;
@@ -407,17 +413,14 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            if(p.length==8 && p[7]==1){
+                try {
+                    fout.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             return null;
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        try {
-            fout.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
