@@ -33,7 +33,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     ArrayList<Dispositivo> plist;
     ArrayList<BluetoothDevice> devices;
     public ArrayList<BluetoothSocket> sockets;
-    ArrayList<Limpieza> cleaning = new ArrayList<>();
+    public ArrayList<Limpieza> cleaning = new ArrayList<>();
     // To the ListView of Connected Devices
     ListView connecteddevices;
     CustomAdapter customAdapterconnected;
@@ -55,7 +55,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                     cleaning.get(cleaning.size()-1).start();
                     // This part is only for showing
                     if(vibrator.hasVibrator()){
-                        System.out.println("Vibre");
+                        //System.out.println("Vibre");
                         vibrator.vibrate(200);
                     }
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -66,10 +66,10 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                     builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            System.out.println(joint);
+                            //System.out.println(joint);
                             conectados.add(new Dispositivo(tmp.getRemoteDevice().getName(), joint));
                             customAdapterconnected.notifyDataSetChanged();
-                            System.out.println("pos: " + pos);
+                            //System.out.println("pos: " + pos);
                             plist.remove(pos);
                             devices.remove(pos);
                             arrayAdapter.notifyDataSetChanged();
@@ -81,7 +81,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                         public void onCheckedChanged(RadioGroup group, int checkedId) {
                             RadioButton btn = (RadioButton)v.findViewById(checkedId);
                             joint = Integer.parseInt(btn.getTag().toString());
-                            System.out.println("joint: "+joint);
+                            //System.out.println("joint: "+joint);
                         }
                     });
                     AlertDialog alert = builder.create();
@@ -119,7 +119,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
         for (BluetoothDevice dev: paired_devices){
             plist.add(new Dispositivo(dev.getName(),dev.getAddress()));
             devices.add(j++,dev);
-            System.out.println("Agregado: "+ dev.getName());
+            //System.out.println("Agregado: "+ dev.getName());
         }
         // Lista de dispositivos conectados
         connecteddevices = (ListView)view.findViewById(R.id.ListaConectados);
@@ -146,11 +146,11 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
 
     public void PasarALosGraficos(){
 
-            for (BluetoothSocket socket : sockets) {
-                if (socket.isConnected()) {
-                    System.out.println(socket.getRemoteDevice().getName() + " conectado");
-                }
-            }
+            //for (BluetoothSocket socket : sockets) {
+            //    if (socket.isConnected()) {
+            //        System.out.println(socket.getRemoteDevice().getName() + " conectado");
+            //    }
+            //}
             // Here we launch a Dialog requesting the name of the patient
             View view = LayoutInflater.from(this.getActivity()).inflate(R.layout.dialog_name, null);
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this.getActivity());
@@ -199,15 +199,15 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                 mmSocket.connect();
             } catch (IOException e) {
                 mHandler.obtainMessage(2,getString(R.string.ConnectingError)+" "+mmDevice.getName()).sendToTarget();
-                System.out.println(e.toString());
+                //System.out.println(e.toString());
                 try {
                     mmSocket.close();
                 } catch (IOException e1) {
-                    System.out.println(e1.toString());
+                    //System.out.println(e1.toString());
                 }
                 return;
             }
-            System.out.println("Conectado con " + mmDevice.getName());
+            //System.out.println("Conectado con " + mmDevice.getName());
             mHandler.obtainMessage(3,getString(R.string.Connectedwith)+" "+mmDevice.getName()).sendToTarget();
             mHandler.obtainMessage(1,mmSocket).sendToTarget();
         }
@@ -217,6 +217,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     private class Limpieza extends Thread{
         private BluetoothSocket mmSocket;
         private InputStream is;
+        private boolean clean = true;
 
         private Limpieza(BluetoothSocket sock){
             mmSocket = sock;
@@ -230,7 +231,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
         }
 
         public void run(){
-            while (true) {
+            while (clean) {
                 try {
                     if(mmSocket.isConnected()) {
                         int av = is.available();
@@ -243,6 +244,10 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
                     break;
                 }
             }
+        }
+
+        public void cancel(){
+            clean = false;
         }
     }
 }

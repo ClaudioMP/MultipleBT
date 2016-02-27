@@ -4,10 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
     <item
+        android:id="@+id/charts_switch"
+        android:title=""
+        android:actionLayout="@layout/switch_layout"
+        app:showAsAction="always"
+        />
+
+    <item
         android:id="@+id/next_Icon"
         android:title="Graficos"
         android:icon="@drawable/ic_forward_white_24dp"
         app:showAsAction="always"
-        >
-    </item>
+        />
 </menu>

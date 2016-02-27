@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -18,6 +20,9 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     int BT_REQUEST = 1;
     ConnectionFragment connectionFragment = null;
     ConnectedMultiMP connectedMultiMP = null;
+    ConnectedNoCharts connectedNoCharts = null;
+    Switch chartsSw;
+    boolean charts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,15 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
+        MenuItem item = menu.findItem(R.id.charts_switch);
+        item.setActionView(R.layout.switch_layout);
+        chartsSw = (Switch)item.getActionView().findViewById(R.id.switch_action_bar);
+        chartsSw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                charts = isChecked;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -87,10 +101,17 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
 
     @Override
     public void PasaSockets(ArrayList<BluetoothSocket> sockets, String name,ArrayList<Dispositivo> dispositivos) {
-        connectedMultiMP = new ConnectedMultiMP();
-        connectedMultiMP.getSockets(sockets, name,dispositivos);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.Layout, connectedMultiMP);
+        if(charts) {
+            connectedMultiMP = new ConnectedMultiMP();
+            connectedMultiMP.getSockets(sockets, name, dispositivos);
+            fragmentTransaction.replace(R.id.Layout, connectedMultiMP);
+        }
+        else{
+            connectedNoCharts = new ConnectedNoCharts();
+            connectedNoCharts.getSockets(sockets,name,dispositivos);
+            fragmentTransaction.replace(R.id.Layout,connectedNoCharts);
+        }
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

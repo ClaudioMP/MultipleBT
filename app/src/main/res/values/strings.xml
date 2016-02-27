@@ -23,13 +23,16 @@
     <string name="tiempo">Tiempo [s]</string>
     <string name="avdevices">Dispositivos disponibles</string>
     <string name="no_sensors">No hay sensores conectados, conecta al menos uno</string>
-    <string name="hip">Cadera</string>
-    <string name="knee">Rodilla</string>
-    <string name="ankle">Tobillo</string>
-    <string name="successConnection">conectado, seleccione articulación</string>
+    <string name="hip">Muslo</string>
+    <string name="knee">Pierna</string>
+    <string name="ankle">Pie</string>
+    <string name="successConnection">conectado, seleccione segmento</string>
     <string-array name="Joints">
         <item>@string/hip</item>
         <item>@string/knee</item>
         <item>@string/ankle</item>
     </string-array>
+    <string name="SensorName">Nombre:</string>
+    <string name="Segment">Segmento:</string>
+    <string name="Samples">Muestras:</string>
 </resources>

@@ -2,23 +2,21 @@ package clmaldonado.multiplebt;
 
 
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.*;
 import android.app.Fragment;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.CardView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 
 import java.io.*;
 import java.util.ArrayList;
@@ -29,39 +27,32 @@ import java.util.Calendar;
 /**
  * A simple {@link Fragment} subclass.
  */
+public class ConnectedNoCharts extends Fragment implements View.OnClickListener {
 
-public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     ArrayList<BluetoothSocket> Sockets;
     int cantSockets = 0;
     Recepcion[] threads;
     String[] Sensors;
-    AppCompatButton iniciar, parar, calibrar;
-    LineChart[] charts;
-    ArrayList<ArrayList<LineDataSet>> sets = new ArrayList<>();
-    LineData[] datos;
+    AppCompatButton iniciar, parar;
     ArrayList<Dispositivo> devices;
     String[] Joints;
-    int maxX;
     // Para las marcas de tiempo
     long tstart;
-    // Layout con las gráficas
-    LinearLayout graficos;
     // Para la escritura en archivo
     FileOutputStream fout;
     String FileName = "Data.csv";
     boolean firstLine = true;
-    // Para la calibración
-    float[] basePitch, baseRoll, baseYaw;
-    int[] basei;
+    // Para los InfoCards
+    LinearLayout Infocards;
+    TextView[] cantDatos;
+
     Handler handler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch(msg.what){
                 case 1:
-                    charts[msg.arg1].notifyDataSetChanged();
-                    charts[msg.arg1].setVisibleXRangeMaximum(maxX);
-                    charts[msg.arg1].moveViewToX(msg.arg2);
+                    cantDatos[msg.arg1].setText(getString(R.string.Samples)+" "+msg.arg2);
                     break;
                 case 2:
                     Toast.makeText(getActivity().getBaseContext(), "\u26A0 " + msg.obj, Toast.LENGTH_SHORT).show();
@@ -72,115 +63,62 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             }
         }
     };
-    public ConnectedMultiMP() {
+
+
+    public ConnectedNoCharts() {
         // Required empty public constructor
-    }
-    public double Inches(){
-        DisplayMetrics dm = getResources().getDisplayMetrics();
-        int width=dm.widthPixels;
-        int height=dm.heightPixels;
-        int dens=dm.densityDpi;
-        double wi=(double)width/(double)dens;
-        double hi=(double)height/(double)dens;
-        double x = Math.pow(wi,2);
-        double y = Math.pow(hi,2);
-        return Math.sqrt(x+y);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_connected_multi_m, container, false);
+        View view = inflater.inflate(R.layout.fragment_connected_no_charts, container, false);
         // Botones
-        iniciar = (AppCompatButton)view.findViewById(R.id.Receive);
-        parar = (AppCompatButton)view.findViewById(R.id.Stop);
-        calibrar = (AppCompatButton)view.findViewById(R.id.Calibrar);
+        iniciar = (AppCompatButton)view.findViewById(R.id.ReceiveNC);
+        parar = (AppCompatButton)view.findViewById(R.id.StopNC);
         iniciar.setOnClickListener(this);
         parar.setOnClickListener(this);
-        calibrar.setOnClickListener(this);
         parar.setClickable(false);
-        calibrar.setClickable(false);
         iniciar.setSupportBackgroundTintList(new ColorStateList(new int[][]{new int[0]}, new int[]{Color.parseColor("#0033cc")}));
         parar.setSupportBackgroundTintList(new ColorStateList(new int[][]{new int[0]},new int[]{Color.parseColor("#0033cc")}));
-        calibrar.setSupportBackgroundTintList(new ColorStateList(new int[][]{new int[0]},new int[]{Color.parseColor("#0033cc")}));
         Joints = getResources().getStringArray(R.array.Joints);
-        int minHeight = Inches()>6?300:250;
-        // Gráficas
-        graficos = (LinearLayout)view.findViewById(R.id.graficas);
+        RevisarEstado();
+        // Here we create the Cards to show some information
+        Infocards = (LinearLayout)view.findViewById(R.id.infoCards);
+        Context ctx = getActivity().getBaseContext();
         for(int i=0;i<cantSockets;i++){
-            // Create the cardView to display the graphic
-            CardView card = new CardView(getActivity().getBaseContext());
-            RelativeLayout rl = new RelativeLayout(getActivity().getBaseContext());
-            TextView tiempo = new TextView(getActivity().getBaseContext());
-            charts[i] = new LineChart(getActivity().getBaseContext());
-            charts[i].setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, minHeight));
-            charts[i].setHardwareAccelerationEnabled(true);
-            charts[i].setId(View.generateViewId());
+            // Creación de elementos del card
+            CardView card = new CardView(ctx);
+            LinearLayout LL = new LinearLayout(ctx);
+            TextView Nombre = new TextView(ctx);
+            TextView Segmento = new TextView(ctx);
+            cantDatos[i] = new TextView(ctx);
+            // Personalización del card
             card.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             card.setCardElevation(5f);
             card.setRadius(0f);
             card.setCardBackgroundColor(Color.parseColor("#eaeaea"));
             card.setUseCompatPadding(true);
             card.setPreventCornerOverlap(true);
-            RelativeLayout.LayoutParams timeParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            timeParams.addRule(RelativeLayout.BELOW,charts[i].getId());
-            timeParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            tiempo.setTextColor(Color.BLACK);
-            tiempo.setTextSize(12f);
-            tiempo.setText(getString(R.string.tiempo));
-            rl.addView(charts[i]);
-            rl.addView(tiempo,timeParams);
-            card.addView(rl);
-            graficos.addView(card);
+            // Asignación de ID
+            Nombre.setId(View.generateViewId());
+            Segmento.setId(View.generateViewId());
+            cantDatos[i].setId(View.generateViewId());
+            // Parámetros de los TextViews
+            LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            // Asignación de textos
+            Nombre.setText(getString(R.string.SensorName)+" "+devices.get(i).getName());
+            Segmento.setText(getString(R.string.Segment)+" "+Joints[devices.get(i).getJoint()-1]);
+            cantDatos[i].setText(getString(R.string.Samples) + " " + 0);
+            // Adición de vistas
+            LL.addView(Segmento,textParams);
+            LL.addView(Nombre,textParams);
+            LL.addView(cantDatos[i],textParams);
+            card.addView(LL);
+            Infocards.addView(card);
         }
-        ConfiguraGraficos();
-        RevisarEstado();
-        maxX = Inches()>6?200:100;
         return view;
-    }
-
-    public void ConfiguraGraficos(){
-        MyMarker marker = new MyMarker(getActivity().getBaseContext(),R.layout.mymarker);
-        for(int i=0; i<cantSockets;i++) {
-            sets.add(new ArrayList<LineDataSet>());
-        }
-        int i = 0;
-        for(ArrayList<LineDataSet> s:sets){
-            s.add(new LineDataSet(new ArrayList<Entry>(), "Pitch"));
-            s.add(new LineDataSet(new ArrayList<Entry>(), "Roll"));
-            s.add(new LineDataSet(new ArrayList<Entry>(), "Yaw"));
-            for(LineDataSet d: s){
-                d.setDrawCircles(false);
-                d.setDrawValues(false);
-                d.setHighlightEnabled(true);
-                d.setLineWidth(2.5f);
-                d.setHighLightColor(Color.parseColor("#0033cc"));
-                d.setHighlightLineWidth(.8f);
-            }
-            s.get(0).setColor(Color.BLACK);
-            s.get(1).setColor(Color.RED);
-            s.get(2).setColor(Color.GREEN);
-            datos[i++] = new LineData(new ArrayList<String>(),s);
-        }
-        int j=0;
-        for(LineChart c: charts){
-            c.setNoDataText(getActivity().getString(R.string.noData));
-            c.setDoubleTapToZoomEnabled(false);
-            c.setPinchZoom(false);
-            c.setHighlightPerDragEnabled(true);
-            c.setHighlightPerTapEnabled(true);
-            c.setScaleYEnabled(true);
-            c.setDescription("");
-            c.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_RIGHT);
-            c.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-            c.setDrawBorders(true);
-            c.getAxisRight().setDrawAxisLine(false);
-            c.setDescription(Joints[devices.get(j++).getJoint() - 1]);
-            //System.out.println(Joints[devices.get(j++).getJoint()-1]);
-            c.getAxisRight().setEnabled(false);
-            c.setMarkerView(marker);
-        }
     }
 
     public void getSockets(ArrayList<BluetoothSocket> socks,String nombre,ArrayList<Dispositivo> dispositivos) {
@@ -190,14 +128,9 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
         //System.out.println("Recibí los " + cantSockets + " sockets");
         threads = new Recepcion[cantSockets];
-        charts = new LineChart[cantSockets];
-        datos = new LineData[cantSockets];
-        basePitch = new float[cantSockets];
-        baseRoll = new float[cantSockets];
-        baseYaw = new float[cantSockets];
-        basei = new int[cantSockets];
         Sensors = new String[cantSockets];
         Sensors = getNames(Sockets);
+        cantDatos = new TextView[cantSockets];
         Calendar c = Calendar.getInstance();
         FileName = nombre+"_"+c.get(Calendar.DATE)+(c.get(Calendar.MONTH)+1)+c.get(Calendar.YEAR)+"_"+c.get(Calendar.HOUR_OF_DAY)+c.get(Calendar.MINUTE)+".csv";
         //System.out.println("all creado, listo para iniciar");
@@ -217,11 +150,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.Receive:
-                int j = 0;
                 tstart = System.currentTimeMillis();
-                for(LineChart c: charts){
-                    c.setData(datos[j++]);
-                }
                 for(int i = 0;i< cantSockets;i++){
                     threads[i] = new Recepcion(Sockets.get(i),handler,i);
                 }
@@ -229,40 +158,22 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     threads[i].start();
                 }
                 parar.setClickable(true);
-                calibrar.setClickable(true);
                 iniciar.setVisibility(View.GONE);
-                calibrar.setVisibility(View.VISIBLE);
                 parar.setVisibility(View.VISIBLE);
                 break;
             case R.id.Stop:
                 for(int i=0;i<cantSockets;i++){
                     //System.out.println("Cerrando Thread " + i);
                     threads[i].cancel();
+                    int data = threads[i].i;
+                    cantDatos[i].setText(getString(R.string.Samples)+" "+data);
                     //System.out.println("Thread " + i + " cerrado");
                     if(i==cantSockets-1){
-                        new Archivo().execute(i,-1,-1,(int)(basePitch[i]*100),(int)(baseRoll[i]*100),(int)(baseYaw[i]*100),1,1);
-                    }
-                    else{
-                        new Archivo().execute(i,-1,-1,(int)(basePitch[i]*100),(int)(baseRoll[i]*100),(int)(baseYaw[i]*100));
+                        new Archivo().execute(0,0,0,0,0,0,0,1);
                     }
 
                 }
                 parar.setVisibility(View.GONE);
-                break;
-            case R.id.Calibrar:
-                for(int i=0;i<cantSockets;i++){
-                    basePitch[i] = datos[i].getDataSetByIndex(0).getYValForXIndex(datos[i].getXValCount()-2);
-                    datos[i].getDataSetByIndex(0).clear();
-                    baseRoll[i] = datos[i].getDataSetByIndex(1).getYValForXIndex(datos[i].getXValCount()-2);
-                    datos[i].getDataSetByIndex(1).clear();
-                    baseYaw[i] = datos[i].getDataSetByIndex(2).getYValForXIndex(datos[i].getXValCount()-2);
-                    datos[i].getDataSetByIndex(2).clear();
-                    charts[i].invalidate();
-                    basei[i] = datos[i].getXValCount()-2;
-                }
-                calibrar.setClickable(false);
-                calibrar.setVisibility(View.GONE);
-                //System.out.println("Calibrado");
                 break;
         }
     }
@@ -271,19 +182,6 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         int[] d = new int[4];
         for(int i=0;i<4;i++){
             d[i] = rawData[i+1]<0?(int)rawData[i+1]+256:(int)rawData[i+1];
-        }
-        float w,x,y,z;
-        w = (d[0]/100.00f)-1;
-        x = (d[1]/100.00f)-1;
-        y = (d[2]/100.00f)-1;
-        z = (d[3]/100.00f)-1;
-        double[] angulos = new double[3];
-        angulos[0] = Math.toDegrees(-Math.asin(2*(x*z - w*y))) - basePitch[sensor]; // pitch
-        angulos[1] = Math.toDegrees(Math.atan2(2 * (w * x + y * z), w * w - x * x - y * y + z * z)) - baseRoll[sensor]; // roll
-        angulos[2] = Math.toDegrees(Math.atan2(2 * (x * y + w * z), 1 - 2 * (y * y + z * z))) - baseYaw[sensor];// yaw
-        datos[sensor].addXValue(time/1000f + "");
-        for(int i=0;i<3;i++){
-            datos[sensor].addEntry(new Entry((((int) ((angulos[i] + 0.005) * 100)) / 100f), index), i);
         }
         new Archivo().execute(sensor,index,(int)time,d[0],d[1],d[2],d[3]);
     }
@@ -317,6 +215,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         private InputStream inputStream;
         private String name;
         private int sensor;
+        public int i=0;
 
         public Recepcion(BluetoothSocket s,Handler h,int n){
             mmSocket = s;
@@ -339,7 +238,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
 
         public void run(){
-            int i=0,bytes;
+            int bytes;
             byte[] buffer = new byte[5];
             // Esto es una especie de GC para evitar graficas de golpe
             try {
@@ -353,17 +252,17 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             while(true){
                 i++;
                 long tnow;
-                Arrays.fill(buffer,(byte)0);
+                Arrays.fill(buffer, (byte) 0);
                 bytes = 0;
                 tnow = System.currentTimeMillis() - tstart;
                 try {
                     while(bytes < 5){
                         //if(inputStream.available()>0) {
-                            bytes += inputStream.read(buffer,bytes,1);
-                            if (buffer[0] != -1) {
-                                buffer[0] = 0;
-                                bytes = 0;
-                            }
+                        bytes += inputStream.read(buffer,bytes,1);
+                        if (buffer[0] != -1) {
+                            buffer[0] = 0;
+                            bytes = 0;
+                        }
                         //}
                     }
                 } catch (IOException e) {

@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="clmaldonado.multiplebt.ConnectedNoCharts">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnLayoutNC">
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start"
+            android:id="@+id/ReceiveNC"
+            android:backgroundTint="@color/colorAccent"
+            android:textColor="#fff"
+            android:drawableLeft="@drawable/ic_play_circle_outline_white_18dp"
+            />
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stop"
+            android:id="@+id/StopNC"
+            android:layout_toRightOf="@id/ReceiveNC"
+            android:layout_toEndOf="@id/ReceiveNC"
+            android:backgroundTint="@color/colorAccent"
+            android:textColor="#fff"
+            android:drawableLeft="@drawable/ic_stop_white_18dp"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/infoCards"
+        android:layout_below="@id/btnLayoutNC"
+        android:orientation="vertical">
+
+    </LinearLayout>
+</RelativeLayout>
