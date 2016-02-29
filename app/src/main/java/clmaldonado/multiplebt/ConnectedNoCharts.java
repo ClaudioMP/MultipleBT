@@ -90,7 +90,7 @@ public class ConnectedNoCharts extends Fragment implements View.OnClickListener 
         for(int i=0;i<cantSockets;i++){
             // Creación de elementos del card
             CardView card = new CardView(ctx);
-            LinearLayout LL = new LinearLayout(ctx);
+            RelativeLayout LL = new RelativeLayout(ctx);
             TextView Nombre = new TextView(ctx);
             TextView Segmento = new TextView(ctx);
             cantDatos[i] = new TextView(ctx);
@@ -106,15 +106,23 @@ public class ConnectedNoCharts extends Fragment implements View.OnClickListener 
             Segmento.setId(View.generateViewId());
             cantDatos[i].setId(View.generateViewId());
             // Parámetros de los TextViews
-            LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams SegParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams NameParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            NameParams.addRule(RelativeLayout.BELOW,Segmento.getId());
+            RelativeLayout.LayoutParams CantParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            CantParams.addRule(RelativeLayout.BELOW, Nombre.getId());
             // Asignación de textos
-            Nombre.setText(getString(R.string.SensorName)+" "+devices.get(i).getName());
-            Segmento.setText(getString(R.string.Segment)+" "+Joints[devices.get(i).getJoint()-1]);
+            Nombre.setText(getString(R.string.SensorName) + " " + devices.get(i).getName());
+            Segmento.setText(getString(R.string.Segment) + " " + Joints[devices.get(i).getJoint() - 1]);
             cantDatos[i].setText(getString(R.string.Samples) + " " + 0);
+            Nombre.setTextColor(getResources().getColor(android.R.color.black));
+            Segmento.setTextColor(getResources().getColor(android.R.color.black));
+            cantDatos[i].setTextColor(getResources().getColor(android.R.color.black));
             // Adición de vistas
-            LL.addView(Segmento,textParams);
-            LL.addView(Nombre,textParams);
-            LL.addView(cantDatos[i],textParams);
+
+            LL.addView(Segmento,SegParams);
+            LL.addView(Nombre,NameParams);
+            LL.addView(cantDatos[i],CantParams);
             card.addView(LL);
             Infocards.addView(card);
         }
@@ -149,7 +157,7 @@ public class ConnectedNoCharts extends Fragment implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.Receive:
+            case R.id.ReceiveNC:
                 tstart = System.currentTimeMillis();
                 for(int i = 0;i< cantSockets;i++){
                     threads[i] = new Recepcion(Sockets.get(i),handler,i);
@@ -161,7 +169,7 @@ public class ConnectedNoCharts extends Fragment implements View.OnClickListener 
                 iniciar.setVisibility(View.GONE);
                 parar.setVisibility(View.VISIBLE);
                 break;
-            case R.id.Stop:
+            case R.id.StopNC:
                 for(int i=0;i<cantSockets;i++){
                     //System.out.println("Cerrando Thread " + i);
                     threads[i].cancel();

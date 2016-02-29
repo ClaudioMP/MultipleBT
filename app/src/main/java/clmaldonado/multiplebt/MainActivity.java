@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     ConnectedNoCharts connectedNoCharts = null;
     Switch chartsSw;
     boolean charts;
+    Menu m;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        m = menu;
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
         MenuItem item = menu.findItem(R.id.charts_switch);
@@ -114,5 +116,7 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
         }
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+        m.findItem(R.id.charts_switch).setVisible(false);
+
     }
 }
