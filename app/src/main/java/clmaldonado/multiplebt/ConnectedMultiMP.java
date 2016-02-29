@@ -293,7 +293,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         String estado = Environment.getExternalStorageState();
         if(Environment.MEDIA_MOUNTED.equals(estado)){
             File Root = Environment.getExternalStorageDirectory();
-            File Dir = new File(Root.getAbsolutePath()+"/MdeT");
+            File Dir = new File(Root.getAbsolutePath()+"/"+getString(R.string.app_name));
             if(!Dir.exists()){
                 Dir.mkdir();
             }

@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity implements Comunicador {
     ConnectedMultiMP connectedMultiMP = null;
     ConnectedNoCharts connectedNoCharts = null;
     Switch chartsSw;
-    boolean charts;
+    boolean charts = true;
     Menu m;
 
     @Override
