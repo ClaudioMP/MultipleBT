@@ -39,7 +39,6 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     CustomAdapter customAdapterconnected;
     ArrayList<Dispositivo> conectados;
     int joint;
-    int pos;
     // To notify by hardware that a device was connected successfully
     Vibrator vibrator;
     public String name = "Default";
@@ -50,6 +49,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
             switch (msg.what){
                 case 1:
                     final BluetoothSocket tmp = (BluetoothSocket)msg.obj;
+                    final int pos = msg.arg1;
                     sockets.add(tmp);
                     cleaning.add(new Limpieza(tmp));
                     cleaning.get(cleaning.size()-1).start();
@@ -140,8 +140,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String aviso = getString(R.string.Connectingto)+" "+devices.get(position).getName();
         Toast.makeText(getActivity().getBaseContext(), aviso, Toast.LENGTH_SHORT).show();
-        new ConnectionThread(devices.get(position), connectionHandler, btAdapter).start();
-        pos = position;
+        new ConnectionThread(devices.get(position), connectionHandler, btAdapter,position).start();
     }
 
     public void PasarALosGraficos(){
@@ -176,11 +175,13 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
         private final BluetoothAdapter mmAdapter;
         private final Handler mHandler;
         private InputStream is;
+        private int pos;
         // UUID for serial communication
         private final UUID spp = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-        private ConnectionThread(BluetoothDevice dev,Handler handler,BluetoothAdapter adapter){
+        private ConnectionThread(BluetoothDevice dev,Handler handler,BluetoothAdapter adapter,int position){
             mmDevice = dev;
+            pos = position;
             mHandler = handler;
             mmAdapter = adapter;
             BluetoothSocket sock = null;
@@ -209,7 +210,7 @@ public class ConnectionFragment extends Fragment implements AdapterView.OnItemCl
             }
             //System.out.println("Conectado con " + mmDevice.getName());
             mHandler.obtainMessage(3,getString(R.string.Connectedwith)+" "+mmDevice.getName()).sendToTarget();
-            mHandler.obtainMessage(1,mmSocket).sendToTarget();
+            mHandler.obtainMessage(1,pos,0,mmSocket).sendToTarget();
         }
 
     }
