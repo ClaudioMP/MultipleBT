@@ -339,7 +339,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
         }
 
         public void run(){
-            int i=0,bytes;
+            int i=0,j=0,bytes;
             byte[] buffer = new byte[5];
             // Esto es una especie de GC para evitar graficas de golpe
             try {
@@ -352,6 +352,7 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
             }
             while(true){
                 i++;
+                j++;
                 long tnow;
                 Arrays.fill(buffer,(byte)0);
                 bytes = 0;
@@ -372,8 +373,10 @@ public class ConnectedMultiMP extends Fragment implements View.OnClickListener{
                     break;
                 }
                 Angulos(sensor,i,tnow, buffer);
-                if(i%10==0) {
+
+                if(j==10) {
                     mHandler.obtainMessage(1, sensor, i).sendToTarget();
+                    j=0;
                 }
             }
         }
